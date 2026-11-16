@@ -1,0 +1,670 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>함께 담그는 비건 김장 🥬 참가신청</title>
+<meta name="description" content="2026년 11월 29일(일) 오전 10시, 함께 담그는 100% 비건 김장 모임 참가신청">
+<script>
+/* =====================================================================
+   CONFIG — 나중에 고칠 값은 전부 여기 있어요.
+   금액·마감일을 바꾸면 Code.gs 맨 위 CONFIG도 똑같이 바꿔 주세요.
+   ===================================================================== */
+const CONFIG = {
+  // Apps Script 웹앱 URL (README 3단계에서 복사한 주소). 비워 두면 가짜 데이터 모드로 동작해요.
+  APPS_SCRIPT_URL: "",
+
+  BASE_FEE: 3000,        // 1인 기본비 (공용 위생용품, 비닐, 남는 배추 대비 여유분)
+  PER_HEAD: 16000,       // 1포기당 (절인배추 5,000 + 양념 약 11,000)
+  HEADS_PER_BOX: 8,      // 절인배추 20kg 1박스 포기 수
+  DEADLINE: "2026-11-24" // 신청 마감일 (이 날 밤 12시까지 신청 가능, 한국 시간)
+};
+
+/* 레시피 — 절인배추 1포기 기준.
+   label: 화면에 보이는 1포기 분량 / per: 장보기 계산용 숫자 / unit: per의 단위
+   pack: 온라인에서 사는 최소 단위(이 단위로 올림) */
+const RECIPE = [
+  { name: "고춧가루",        label: "150g",     per: 150,  unit: "g",  pack: 500 },
+  { name: "무",              label: "1/2개",    per: 0.5,  unit: "개", pack: 1 },
+  { name: "쪽파",            label: "1/10단",   per: 0.1,  unit: "단", pack: 1 },
+  { name: "깐마늘",          label: "50g",      per: 50,   unit: "g",  pack: 500 },  // 원래 표: 120g
+  { name: "생강",            label: "10g",      per: 10,   unit: "g",  pack: 100 },  // 원래 표: 40g
+  { name: "대파",            label: "1/10단",   per: 0.1,  unit: "단", pack: 1 },
+  { name: "갓",              label: "1/20단",   per: 0.05, unit: "단", pack: 1 },
+  { name: "미나리",          label: "1/20단",   per: 0.05, unit: "단", pack: 1 },
+  { name: "찹쌀가루",        label: "15g",      per: 15,   unit: "g",  pack: 500 },  // 원래 표: 50g
+  { name: "양파",            label: "1/4개",    per: 0.25, unit: "개", pack: 1 },
+  { name: "배 (또는 사과)",  label: "1/4개",    per: 0.25, unit: "개", pack: 1 },
+  { name: "다시마 (채수용)", label: "3g",       per: 3,    unit: "g",  pack: 100 },
+  { name: "건표고 (채수용)", label: "1개(4g)",  per: 4,    unit: "g",  pack: 100 },
+  { name: "국간장",          label: "3큰술",    per: 45,   unit: "ml", pack: 500 },  // 원래 표: 1~2큰술
+  { name: "매실청",          label: "1큰술",    per: 15,   unit: "ml", pack: 500 },
+  { name: "된장",            label: "1작은술",  per: 6,    unit: "g",  pack: 500 },
+  { name: "굵은소금 (간 맞추기)", label: "1/2큰술 안팎", per: 8, unit: "g", pack: 1000 } // 새로 추가
+];
+</script>
+<style>
+  :root {
+    --green: #2e7d32;
+    --green-dark: #1f5a24;
+    --green-soft: #e6f2e1;
+    --red: #c62f24;
+    --red-soft: #fdebe7;
+    --bg: #fbf6ec;
+    --card: #ffffff;
+    --ink: #2a2520;
+    --muted: #6b635a;
+    --line: #e6dccb;
+  }
+  * { box-sizing: border-box; }
+  html { -webkit-text-size-adjust: 100%; }
+  body {
+    margin: 0;
+    background: var(--bg);
+    color: var(--ink);
+    font-family: Pretendard, "Apple SD Gothic Neo", "Noto Sans KR", "Malgun Gothic", system-ui, sans-serif;
+    font-size: 18px;
+    line-height: 1.65;
+    word-break: keep-all;
+    overflow-wrap: anywhere;
+  }
+  main { max-width: 560px; margin: 0 auto; padding: 0 16px 48px; }
+  h1 { font-size: 30px; line-height: 1.3; margin: 0 0 8px; text-wrap: balance; }
+  h2 { font-size: 23px; margin: 0 0 14px; color: var(--green-dark); }
+  h3 { font-size: 19px; margin: 22px 0 8px; }
+  p { margin: 0 0 12px; }
+  a { color: var(--green-dark); }
+  .hidden { display: none !important; }
+
+  .mock-banner {
+    background: #fff3cd; color: #6b4e00; font-size: 15px;
+    padding: 8px 16px; text-align: center; border-bottom: 1px solid #f0dc9a;
+  }
+
+  header.hero {
+    background: linear-gradient(180deg, var(--green) 0%, #3f9443 100%);
+    color: #fff; padding: 32px 16px 44px; text-align: center;
+  }
+  header.hero p { margin: 0; font-size: 18px; opacity: .95; }
+
+  .card {
+    background: var(--card); border: 1px solid var(--line); border-radius: 18px;
+    padding: 22px 18px; margin-top: 18px;
+    box-shadow: 0 2px 8px rgba(80, 60, 20, .05);
+  }
+  .card.first { margin-top: -22px; position: relative; }
+
+  .info { list-style: none; padding: 0; margin: 0 0 14px; }
+  .info li { display: flex; gap: 10px; padding: 9px 0; border-bottom: 1px dashed var(--line); }
+  .info li:last-child { border-bottom: 0; }
+  .info .k { flex: 0 0 4.6em; font-weight: 700; color: var(--green-dark); }
+  .info small { display: block; color: var(--muted); font-size: 15px; line-height: 1.5; }
+  .points { padding-left: 0; list-style: none; margin: 0; }
+  .points li { padding: 5px 0 5px 1.6em; position: relative; }
+  .points li::before { content: "🥬"; position: absolute; left: 0; }
+  .vegan-badge {
+    background: var(--green-soft); border-radius: 12px; padding: 12px 14px; margin: 14px 0;
+    font-weight: 600; color: var(--green-dark);
+  }
+
+  /* 현황 */
+  .status { text-align: center; background: var(--red-soft); border-color: #f3cdc5; }
+  .status .big { font-size: 24px; font-weight: 700; line-height: 1.5; margin: 0; }
+  .status .big b { color: var(--red); font-size: 38px; font-variant-numeric: tabular-nums; padding: 0 2px; }
+  .status .sub { color: var(--muted); font-size: 16px; margin: 6px 0 0; }
+  .closed-msg {
+    background: var(--red); color: #fff; font-weight: 700; font-size: 21px;
+    border-radius: 12px; padding: 14px; margin: 14px 0 0;
+  }
+
+  /* 폼 */
+  label.field { display: block; font-weight: 700; margin: 18px 0 6px; }
+  .req { color: var(--red); }
+  .opt { color: var(--muted); font-weight: 400; font-size: 15px; }
+  input[type=text], input[type=tel], input[type=number] {
+    width: 100%; font: inherit; font-size: 20px; padding: 13px 14px;
+    border: 2px solid var(--line); border-radius: 12px; background: #fff; color: var(--ink);
+  }
+  input:focus-visible, button:focus-visible, summary:focus-visible {
+    outline: 3px solid #f2b63c; outline-offset: 2px;
+  }
+  input.invalid { border-color: var(--red); }
+  .err { color: var(--red); font-size: 16px; margin: 6px 0 0; min-height: 0; }
+  .stepper { display: flex; gap: 10px; align-items: stretch; }
+  .stepper input { text-align: center; font-weight: 700; font-size: 24px; flex: 1; min-width: 0; -moz-appearance: textfield; }
+  .stepper input::-webkit-outer-spin-button, .stepper input::-webkit-inner-spin-button { -webkit-appearance: none; margin: 0; }
+  .stepper button {
+    flex: 0 0 60px; height: 60px; font-size: 30px; font-weight: 700; line-height: 1;
+    border: 2px solid var(--green); background: var(--green-soft); color: var(--green-dark);
+    border-radius: 12px; cursor: pointer; touch-action: manipulation;
+  }
+  .stepper button:active { background: #cfe6c8; }
+  .stepper .unit { align-self: center; font-weight: 700; }
+  .consent {
+    display: flex; gap: 12px; align-items: flex-start; margin-top: 20px; padding: 14px;
+    background: #f7f2e7; border-radius: 12px; cursor: pointer;
+  }
+  .consent input { flex: 0 0 26px; width: 26px; height: 26px; margin: 3px 0 0; accent-color: var(--green); }
+  .consent small { display: block; color: var(--muted); font-size: 15px; }
+  .fee-live {
+    margin: 20px 0 12px; padding: 14px; text-align: center; border-radius: 12px;
+    background: var(--green-soft); font-size: 20px;
+  }
+  .fee-live b { color: var(--red); font-size: 26px; font-variant-numeric: tabular-nums; }
+  .btn {
+    display: block; width: 100%; min-height: 60px; font: inherit; font-size: 21px; font-weight: 700;
+    border: 0; border-radius: 14px; background: var(--red); color: #fff; cursor: pointer;
+    touch-action: manipulation;
+  }
+  .btn:active { filter: brightness(.93); }
+  .btn[disabled] { opacity: .6; cursor: default; }
+  .btn.green { background: var(--green); }
+  .btn.ghost { background: #fff; color: var(--ink); border: 2px solid var(--line); }
+  .spinner {
+    display: inline-block; width: 20px; height: 20px; margin-right: 8px; vertical-align: -3px;
+    border: 3px solid rgba(255,255,255,.45); border-top-color: #fff; border-radius: 50%;
+    animation: spin .8s linear infinite;
+  }
+  @keyframes spin { to { transform: rotate(360deg); } }
+  @media (prefers-reduced-motion: reduce) { .spinner { animation-duration: 2.5s; } }
+  .notice { border-radius: 12px; padding: 16px; margin-top: 14px; }
+  .notice.dup { background: #fff3cd; border: 1px solid #f0dc9a; }
+  .notice.done { background: var(--green-soft); border: 1px solid #bfdcb6; text-align: center; }
+  .notice.done .fee { font-size: 26px; font-weight: 700; color: var(--red); }
+  .notice .row { display: flex; gap: 10px; margin-top: 12px; }
+  .notice .row .btn { min-height: 54px; font-size: 18px; }
+  .form-error { color: var(--red); font-weight: 600; margin-top: 12px; }
+
+  /* 접기/펼치기 */
+  details { border-top: 1px solid var(--line); }
+  details.card { border-top: 1px solid var(--line); }
+  summary {
+    cursor: pointer; font-weight: 700; padding: 14px 30px 14px 0; position: relative;
+    list-style: none; min-height: 54px; display: flex; align-items: center;
+  }
+  summary::-webkit-details-marker { display: none; }
+  summary::after { content: "＋"; position: absolute; right: 2px; color: var(--green); font-size: 22px; }
+  details[open] > summary::after { content: "－"; }
+  details.card > summary { font-size: 23px; color: var(--green-dark); padding-top: 0; padding-bottom: 0; }
+  details.card[open] > summary { margin-bottom: 12px; }
+
+  table { width: 100%; border-collapse: collapse; font-size: 17px; }
+  th, td { padding: 9px 6px; border-bottom: 1px solid var(--line); text-align: left; vertical-align: top; }
+  td.num, th.num { text-align: right; font-variant-numeric: tabular-nums; white-space: nowrap; }
+  th { color: var(--muted); font-size: 15px; font-weight: 600; }
+  td small { color: var(--muted); font-size: 14px; display: block; }
+  ol.steps { padding-left: 1.3em; margin: 0; }
+  ol.steps li { margin-bottom: 12px; }
+  ol.steps b { color: var(--green-dark); }
+  .hint { color: var(--muted); font-size: 15px; }
+  .box-line { background: var(--red-soft); border-radius: 12px; padding: 12px 14px; font-weight: 700; margin-bottom: 8px; }
+
+  .calc-result {
+    background: var(--green-soft); border-radius: 12px; padding: 16px; margin: 16px 0 8px;
+    text-align: center; font-size: 18px;
+  }
+  .calc-result b { display: block; font-size: 30px; color: var(--red); font-variant-numeric: tabular-nums; }
+  .fee-table { font-size: 16px; }
+  .fee-table tr.me td { background: var(--green-soft); font-weight: 700; }
+  .fee-table-wrap { display: grid; grid-template-columns: 1fr 1fr; gap: 0 16px; }
+  footer { text-align: center; color: var(--muted); font-size: 15px; margin-top: 28px; }
+</style>
+</head>
+<body>
+
+<div id="mockBanner" class="mock-banner hidden">🧪 미리보기 모드예요 — 가짜 데이터로 동작하고, 실제로 저장되지 않아요.</div>
+
+<header class="hero">
+  <h1>함께 담그는 비건 김장 🥬</h1>
+  <p>올겨울 김치, 이웃과 같이 담가요</p>
+</header>
+
+<main>
+
+  <!-- ① 안내문 -->
+  <section class="card first" aria-labelledby="h-info">
+    <h2 id="h-info">모임 안내</h2>
+    <p>찬바람 불면 생각나는 김장, 혼자 하면 일이지만 같이 하면 잔치예요. 편하게 오세요!</p>
+    <ul class="info">
+      <li><span class="k">일시</span><span>2026년 11월 29일(일) 오전 10시</span></li>
+      <li><span class="k">장소</span><span>건영3차아파트 7동 904호</span></li>
+      <li><span class="k">신청 마감</span><span>2026년 11월 24일(화)
+        <small>절인배추 받을 날짜를 정해서 미리 주문해야 해서요.</small></span></li>
+      <li><span class="k">준비물</span><span>앞치마, 고무장갑, 김치통
+        <small>가져갈 포기 수에 맞는 크기로요. 1포기에 약 3~4L예요.</small></span></li>
+      <li><span class="k">문의</span><span><a href="mailto:a01051998767@gmail.com">a01051998767@gmail.com</a></span></li>
+    </ul>
+    <div class="vegan-badge">🌱 100% 비건 김치예요 — 젓갈·액젓·새우·굴이 들어가지 않아요.</div>
+    <ul class="points">
+      <li>절인배추를 포함한 모든 재료는 신청한 포기 수에 맞춰 온라인으로 한꺼번에 사요.</li>
+      <li>참가비는 재료비를 실비로 나눠요.</li>
+      <li>김치속은 참가자들이 다 같이 만들어요.</li>
+    </ul>
+  </section>
+
+  <!-- ② 현재 신청 현황 -->
+  <section class="card status" aria-labelledby="h-status" aria-live="polite">
+    <h2 id="h-status">현재 신청 현황</h2>
+    <p class="big" id="statusBig">불러오는 중이에요…</p>
+    <p class="sub" id="statusSub"></p>
+    <button type="button" class="btn ghost hidden" id="statusRetry" style="margin-top:12px">다시 불러오기</button>
+    <p class="closed-msg hidden" id="closedMsg">신청이 마감되었어요</p>
+  </section>
+
+  <!-- ③ 참가신청서 -->
+  <section class="card" aria-labelledby="h-form">
+    <h2 id="h-form">참가신청서</h2>
+
+    <p id="formClosed" class="hidden">신청이 마감되었어요. 궁금한 점은 <a href="mailto:a01051998767@gmail.com">메일</a>로 물어봐 주세요.</p>
+
+    <form id="form" novalidate>
+      <label class="field" for="name">이름 또는 활동명 <span class="req">*</span></label>
+      <input type="text" id="name" maxlength="30" autocomplete="name" aria-describedby="nameErr">
+      <p class="err" id="nameErr" role="alert"></p>
+
+      <label class="field" for="phone">연락처 <span class="req">*</span></label>
+      <input type="tel" id="phone" inputmode="numeric" maxlength="13" placeholder="010-1234-5678" autocomplete="tel" aria-describedby="phoneErr">
+      <p class="err" id="phoneErr" role="alert"></p>
+
+      <label class="field" for="heads">신청 포기 수 <span class="req">*</span></label>
+      <div class="stepper">
+        <button type="button" id="headsMinus" aria-label="한 포기 줄이기">−</button>
+        <input type="number" id="heads" inputmode="numeric" min="1" step="1" value="1" aria-describedby="headsErr">
+        <span class="unit">포기</span>
+        <button type="button" id="headsPlus" aria-label="한 포기 늘리기">+</button>
+      </div>
+      <p class="err" id="headsErr" role="alert"></p>
+
+      <label class="field" for="message">하고 싶은 말 <span class="opt">(선택)</span></label>
+      <input type="text" id="message" maxlength="100" placeholder="예: 덜 맵게 하고 싶어요">
+
+      <label class="consent" for="consent">
+        <input type="checkbox" id="consent">
+        <span><b>개인정보 수집에 동의해요 <span class="req">*</span></b>
+          <small>행사 연락 목적으로만 쓰고 행사가 끝나면 파기합니다.</small></span>
+      </label>
+      <p class="err" id="consentErr" role="alert"></p>
+
+      <div class="fee-live">예상 참가비: <b id="feeLive">0원</b></div>
+
+      <button type="submit" class="btn" id="submitBtn">신청하기</button>
+      <p class="form-error hidden" id="formError" role="alert"></p>
+    </form>
+
+    <div class="notice dup hidden" id="dupBox" role="alertdialog" aria-labelledby="dupTitle">
+      <b id="dupTitle">이 연락처로 이미 신청하신 내역이 있어요.</b>
+      <p style="margin:6px 0 0">지금 입력한 내용으로 고칠까요?</p>
+      <div class="row">
+        <button type="button" class="btn green" id="dupYes">네, 고칠게요</button>
+        <button type="button" class="btn ghost" id="dupNo">아니요</button>
+      </div>
+    </div>
+
+    <div class="notice done hidden" id="doneBox" role="status">
+      <p style="font-size:22px;font-weight:700;margin-bottom:6px" id="doneTitle">신청이 완료됐어요! 🎉</p>
+      <p id="doneDetail"></p>
+      <p class="fee" id="doneFee"></p>
+      <p class="hint">실제 구매가로 정산해서 차액이 생기면 행사 당일 알려드려요.<br>내용을 바꾸고 싶으면 같은 연락처로 다시 신청하면 돼요.</p>
+      <button type="button" class="btn ghost" id="doneAgain">신청서 다시 쓰기</button>
+    </div>
+  </section>
+
+  <!-- ④ 레시피 -->
+  <details class="card" id="recipe">
+    <summary>비건 김장김치 레시피</summary>
+
+    <p>젓갈 대신 <b>다시마·표고 채수, 국간장, 된장 조금, 배</b>로 감칠맛을 내요. 찹쌀풀도 채수로 쑤어요.</p>
+
+    <h3>재료 (절인배추 1포기 기준)</h3>
+    <table>
+      <thead><tr><th>재료</th><th class="num">1포기 분량</th></tr></thead>
+      <tbody id="recipeBody"></tbody>
+    </table>
+    <p class="hint" style="margin-top:8px">절인배추 1포기는 약 2.5kg이에요. 다시마 3g + 건표고 1개를 물 250ml에 끓이면 채수 약 200ml가 나와요. 국간장 대신 비건 액젓(콩·해조류로 만든 것)을 써도 좋아요.</p>
+
+    <h3>만드는 순서 (당일 흐름)</h3>
+    <ol class="steps">
+      <li><b>채수·찹쌀풀</b> — 도착하면 절인배추부터 채반에 엎어 물기를 빼요. 물에 다시마·건표고를 넣고 끓이다가 끓어오르면 약불로 10분, 다시마를 건지고 10분 더 끓여요. 식힌 채수(1포기당 150ml)에 찹쌀가루를 풀어 약불에서 저어 가며 풀을 쑤고 완전히 식혀요.</li>
+      <li><b>채소 썰기</b> — 무는 채 썰고, 쪽파·갓·미나리는 4cm 길이로, 대파는 어슷하게 썰어요. 마늘·생강·양파·배는 남은 채수와 함께 믹서에 갈아요.</li>
+      <li><b>양념 섞기</b> — 식은 찹쌀풀에 고춧가루를 먼저 풀어 20분쯤 불려요(색이 고와져요). 갈아 둔 재료, 국간장, 매실청, 된장을 넣고 섞은 뒤 무채를 넣어 버무리고, 마지막에 쪽파·갓·미나리·대파를 살살 섞어요. 맛을 보고 싱거우면 굵은소금으로 간을 맞춰요. 살짝 짭짤해야 익었을 때 딱 좋아요.</li>
+      <li><b>버무리기</b> — 배춧잎을 한 장씩 들춰 줄기 쪽에 속을 넉넉히, 잎 쪽은 살짝만 발라요. 겉잎으로 전체를 감싸 풀리지 않게 해요.</li>
+      <li><b>통에 담기</b> — 자른 면이 위로 오게 차곡차곡 담고 꾹꾹 눌러 공기를 빼요. 통의 80%만 채우고 남은 겉잎(우거지)으로 덮어요. 서늘한 곳에 하루쯤 두었다가 냉장고에 넣으면 돼요.</li>
+    </ol>
+
+    <div class="vegan-badge">🌱 비건 확인 완료 — 위 재료 17가지는 모두 식물성(채소·과일·곡물·해조류·버섯·콩 발효 양념·소금)이에요. 젓갈·액젓·새우·굴·멸치·가쓰오 육수는 쓰지 않아요.</div>
+
+    <details>
+      <summary>기준표에서 고친 부분</summary>
+      <p class="hint">20포기 기준표를 1/20로 나눈 값 중 일반적인 김장 비율과 많이 다른 것만 고쳤어요.</p>
+      <ul>
+        <li><b>깐마늘 120g → 50g</b> : 1포기에 120g은 통마늘 3통 분량이라 매운맛이 너무 강해요.</li>
+        <li><b>생강 40g → 10g</b> : 생강은 보통 마늘의 1/5 정도예요. 많으면 쓴맛이 나요.</li>
+        <li><b>찹쌀가루 50g → 15g</b> : 채수 150ml에 50g이면 풀이 아니라 떡이 돼요(가루:물 = 1:10).</li>
+        <li><b>국간장 1~2큰술 → 3큰술 + 굵은소금으로 간</b> : 젓갈이 빠진 만큼 짠맛이 모자라서 늘렸어요.</li>
+      </ul>
+    </details>
+
+    <details id="shopDetails">
+      <summary>장보기 목록 (신청 총 포기 수 기준)</summary>
+      <p id="shopIntro" class="hint"></p>
+      <div class="box-line" id="shopBox"></div>
+      <table>
+        <thead><tr><th>재료</th><th class="num">필요량</th><th class="num">살 양</th></tr></thead>
+        <tbody id="shopBody"></tbody>
+      </table>
+      <p class="hint" style="margin-top:8px">‘살 양’은 온라인에서 파는 단위로 올림한 값이에요.</p>
+    </details>
+  </details>
+
+  <!-- ⑤ 참가비 모의계산기 -->
+  <section class="card" aria-labelledby="h-calc">
+    <h2 id="h-calc">참가비 모의계산기</h2>
+    <label class="field" for="calcHeads" style="margin-top:0">몇 포기 가져가실 건가요?</label>
+    <div class="stepper">
+      <button type="button" id="calcMinus" aria-label="한 포기 줄이기">−</button>
+      <input type="number" id="calcHeads" inputmode="numeric" min="1" step="1" value="1">
+      <span class="unit">포기</span>
+      <button type="button" id="calcPlus" aria-label="한 포기 늘리기">+</button>
+    </div>
+    <div class="calc-result" aria-live="polite">
+      <span id="calcFormula"></span>
+      <b id="calcTotal"></b>
+    </div>
+    <p class="hint" id="calcStepNote"></p>
+
+    <h3>1~10포기 참가비</h3>
+    <div class="fee-table-wrap">
+      <table class="fee-table"><tbody id="feeTableA"></tbody></table>
+      <table class="fee-table"><tbody id="feeTableB"></tbody></table>
+    </div>
+
+    <details style="margin-top:16px">
+      <summary>산정 근거 (1포기 <span id="perHeadText"></span>원)</summary>
+      <table>
+        <tbody>
+          <tr><td>절인배추<small>20kg 온라인 약 40,000원(무료배송) ÷ 8포기</small></td><td class="num">5,000원</td></tr>
+          <tr><td>고춧가루 150g<small>국산 1kg 약 30,000원</small></td><td class="num">4,500원</td></tr>
+          <tr><td>무·쪽파·마늘·생강·대파</td><td class="num">4,300원</td></tr>
+          <tr><td>갓·미나리·찹쌀가루</td><td class="num">850원</td></tr>
+          <tr><td>비건 감칠맛 재료<small>다시마·표고·국간장·된장·배 등</small></td><td class="num">800원</td></tr>
+          <tr><td>온라인 배송비·여유분</td><td class="num">550원</td></tr>
+          <tr><td><b>합계</b></td><td class="num"><b>16,000원</b></td></tr>
+        </tbody>
+      </table>
+      <p style="margin-top:12px">여기에 <b>1인 기본비 <span id="baseFeeText"></span>원</b>(공용 위생용품, 비닐, 남는 배추 대비 여유분)이 더해져요.</p>
+      <p><b>실제 구매가로 정산해서 차액이 생기면 행사 당일 알려드려요.</b></p>
+    </details>
+  </section>
+
+  <footer>함께 담그는 비건 김장 · 문의 <a href="mailto:a01051998767@gmail.com">a01051998767@gmail.com</a></footer>
+</main>
+
+<script>
+(function () {
+  "use strict";
+  var $ = function (id) { return document.getElementById(id); };
+  var params = new URLSearchParams(location.search);
+  var MOCK = !CONFIG.APPS_SCRIPT_URL || params.get("mock") === "1";
+
+  /* ---------- 공통 계산 ---------- */
+  function won(n) { return Number(n).toLocaleString("ko-KR") + "원"; }
+  function fee(heads) { return CONFIG.BASE_FEE + CONFIG.PER_HEAD * heads; }
+  function boxes(heads) { return Math.ceil(heads / CONFIG.HEADS_PER_BOX); }
+  function toHeads(v) {
+    var n = parseInt(String(v).replace(/[^\d]/g, ""), 10);
+    return isNaN(n) || n < 1 ? 1 : n;
+  }
+  // 마감: DEADLINE 당일 밤 12시(한국 시간)까지 신청 가능.
+  // 주소 뒤에 ?today=2026-11-25 를 붙이면 그 날짜인 것처럼 미리 볼 수 있어요.
+  function isClosed() {
+    var now = params.get("today") ? new Date(params.get("today") + "T12:00:00+09:00") : new Date();
+    var end = new Date(CONFIG.DEADLINE + "T23:59:59+09:00");
+    return now.getTime() > end.getTime();
+  }
+  function fmtQty(v, unit) {
+    v = Math.round(v * 100) / 100;
+    if (unit === "g" && v >= 1000) return (v / 1000) + "kg";
+    if (unit === "ml" && v >= 1000) return (v / 1000) + "L";
+    return v + unit;
+  }
+
+  /* ---------- 서버 통신 (또는 가짜 데이터) ---------- */
+  var MOCK_KEY = "kimjang-mock-v1";
+  function mockLoad() {
+    try {
+      var saved = JSON.parse(localStorage.getItem(MOCK_KEY));
+      if (Array.isArray(saved)) return saved;
+    } catch (e) {}
+    return [
+      { phone: "01000000001", heads: 5 }, { phone: "01000000002", heads: 2 },
+      { phone: "01000000003", heads: 3 }, { phone: "01000000004", heads: 1 },
+      { phone: "01000000005", heads: 4 }, { phone: "01000000006", heads: 6 }
+    ];
+  }
+  function mockSave(rows) { try { localStorage.setItem(MOCK_KEY, JSON.stringify(rows)); } catch (e) {} }
+  function mockSummary(rows) {
+    return { count: rows.length, heads: rows.reduce(function (s, r) { return s + r.heads; }, 0) };
+  }
+  function delay(ms, value) { return new Promise(function (res) { setTimeout(function () { res(value); }, ms); }); }
+
+  var api = MOCK ? {
+    summary: function () { return delay(400, Object.assign({ ok: true }, mockSummary(mockLoad()))); },
+    submit: function (p) {
+      var rows = mockLoad(), digits = p.phone.replace(/\D/g, "");
+      if (isClosed()) return delay(700, { ok: false, status: "closed" });
+      var found = rows.filter(function (r) { return r.phone === digits; })[0];
+      if (found && !p.update) return delay(700, { ok: false, status: "duplicate" });
+      if (found) found.heads = p.heads; else rows.push({ phone: digits, heads: p.heads });
+      mockSave(rows);
+      return delay(700, Object.assign({ ok: true, status: found ? "updated" : "created" }, mockSummary(rows)));
+    }
+  } : {
+    summary: function () {
+      return fetch(CONFIG.APPS_SCRIPT_URL + "?action=summary&t=" + Date.now())
+        .then(function (r) { return r.json(); });
+    },
+    submit: function (p) {
+      // text/plain으로 보내야 Apps Script에서 CORS 사전 요청 없이 받아요.
+      return fetch(CONFIG.APPS_SCRIPT_URL, {
+        method: "POST",
+        headers: { "Content-Type": "text/plain;charset=utf-8" },
+        body: JSON.stringify(Object.assign({ action: "submit" }, p))
+      }).then(function (r) { return r.json(); });
+    }
+  };
+
+  /* ---------- ② 현황 ---------- */
+  var totalHeads = 0;
+  function renderStatus(s) {
+    totalHeads = s.heads;
+    $("statusBig").innerHTML = "현재 <b>" + s.count + "</b>명이<br>총 <b>" + s.heads + "</b>포기를 신청했어요";
+    $("statusSub").textContent = "절인배추 약 " + boxes(s.heads) + "박스(20kg) 주문 예정";
+    $("statusRetry").classList.add("hidden");
+    renderShopping();
+  }
+  function loadStatus() {
+    return api.summary().then(function (s) {
+      if (!s || s.ok === false || typeof s.heads !== "number") throw new Error("bad response");
+      renderStatus(s);
+    }).catch(function () {
+      $("statusBig").textContent = "현황을 불러오지 못했어요";
+      $("statusSub").textContent = "잠시 뒤에 다시 눌러 주세요.";
+      $("statusRetry").classList.remove("hidden");
+    });
+  }
+  $("statusRetry").addEventListener("click", function () {
+    $("statusBig").textContent = "불러오는 중이에요…";
+    $("statusSub").textContent = "";
+    loadStatus();
+  });
+
+  function applyClosed() {
+    $("closedMsg").classList.remove("hidden");
+    $("form").classList.add("hidden");
+    $("dupBox").classList.add("hidden");
+    $("formClosed").classList.remove("hidden");
+  }
+
+  /* ---------- ④ 레시피·장보기 ---------- */
+  $("recipeBody").innerHTML = RECIPE.map(function (r) {
+    return "<tr><td>" + r.name + "</td><td class='num'>" + r.label + "</td></tr>";
+  }).join("");
+
+  function renderShopping() {
+    var n = totalHeads;
+    $("shopIntro").textContent = n > 0
+      ? "지금까지 신청된 총 " + n + "포기 기준이에요. 신청이 들어오면 자동으로 바뀌어요."
+      : "아직 신청이 없어요. 신청이 들어오면 자동으로 계산돼요.";
+    $("shopBox").textContent = "절인배추 " + boxes(n) + "박스 (20kg, 1박스 = " + CONFIG.HEADS_PER_BOX + "포기 · 총 " +
+      (boxes(n) * CONFIG.HEADS_PER_BOX) + "포기분)";
+    $("shopBody").innerHTML = RECIPE.map(function (r) {
+      var need = r.per * n;
+      var buy = Math.ceil(Math.round(need / r.pack * 1e6) / 1e6) * r.pack;
+      return "<tr><td>" + r.name + "</td><td class='num'>" + fmtQty(need, r.unit) +
+        "</td><td class='num'><b>" + fmtQty(buy, r.unit) + "</b></td></tr>";
+    }).join("");
+  }
+
+  /* ---------- ⑤ 계산기 ---------- */
+  function renderCalc() {
+    var n = toHeads($("calcHeads").value);
+    $("calcFormula").textContent = "기본 " + won(CONFIG.BASE_FEE).replace("원", "") + "원 + " +
+      CONFIG.PER_HEAD.toLocaleString("ko-KR") + "원 × " + n + "포기 =";
+    $("calcTotal").textContent = "총 " + won(fee(n));
+    $("calcStepNote").textContent = "1포기 늘릴 때마다 " + won(CONFIG.PER_HEAD) + "이 더 붙어요. (" +
+      (n + 1) + "포기면 " + won(fee(n + 1)) + ")";
+    var rows = [];
+    for (var i = 1; i <= 10; i++) {
+      rows.push("<tr" + (i === n ? " class='me'" : "") + "><td>" + i + "포기</td><td class='num'>" + won(fee(i)) + "</td></tr>");
+    }
+    $("feeTableA").innerHTML = rows.slice(0, 5).join("");
+    $("feeTableB").innerHTML = rows.slice(5).join("");
+  }
+  $("perHeadText").textContent = CONFIG.PER_HEAD.toLocaleString("ko-KR");
+  $("baseFeeText").textContent = CONFIG.BASE_FEE.toLocaleString("ko-KR");
+
+  /* ---------- 포기 수 입력 (+/− 버튼) ---------- */
+  function bindStepper(input, minus, plus, onChange) {
+    function set(n) { input.value = n; onChange(n); }
+    minus.addEventListener("click", function () { set(Math.max(1, toHeads(input.value) - 1)); });
+    plus.addEventListener("click", function () { set(toHeads(input.value) + 1); });
+    input.addEventListener("input", function () { if (input.value !== "") onChange(toHeads(input.value)); });
+    input.addEventListener("blur", function () { set(toHeads(input.value)); });
+  }
+  function renderFeeLive() { $("feeLive").textContent = won(fee(toHeads($("heads").value))); }
+  // 신청서 포기 수 → 계산기에 자동 반영
+  bindStepper($("heads"), $("headsMinus"), $("headsPlus"), function (n) {
+    renderFeeLive();
+    $("calcHeads").value = n;
+    renderCalc();
+  });
+  bindStepper($("calcHeads"), $("calcMinus"), $("calcPlus"), renderCalc);
+
+  /* ---------- ③ 신청서 ---------- */
+  var PHONE_RE = /^01[016789]-\d{3,4}-\d{4}$/;
+  function formatPhone(v) {
+    var d = v.replace(/\D/g, "").slice(0, 11);
+    if (d.length < 4) return d;
+    if (d.length < 8) return d.slice(0, 3) + "-" + d.slice(3);
+    if (d.length === 10) return d.slice(0, 3) + "-" + d.slice(3, 6) + "-" + d.slice(6);
+    return d.slice(0, 3) + "-" + d.slice(3, 7) + "-" + d.slice(7);
+  }
+  $("phone").addEventListener("input", function () { this.value = formatPhone(this.value); });
+
+  function setErr(inputId, errId, msg) {
+    $(errId).textContent = msg || "";
+    if ($(inputId)) $(inputId).classList.toggle("invalid", !!msg);
+    return !msg;
+  }
+  function validate() {
+    var name = $("name").value.trim(), phone = $("phone").value.trim(), raw = $("heads").value.trim();
+    var ok = [
+      setErr("name", "nameErr", name ? "" : "이름이나 활동명을 적어 주세요."),
+      setErr("phone", "phoneErr", PHONE_RE.test(phone) ? "" : "휴대폰 번호를 확인해 주세요. (예: 010-1234-5678)"),
+      setErr("heads", "headsErr", /^\d+$/.test(raw) && parseInt(raw, 10) >= 1 ? "" : "1포기 이상, 숫자로 적어 주세요."),
+      setErr(null, "consentErr", $("consent").checked ? "" : "개인정보 수집에 동의해 주셔야 신청할 수 있어요.")
+    ];
+    if (ok.indexOf(false) >= 0) {
+      var first = ["name", "phone", "heads", "consent"][ok.indexOf(false)];
+      $(first).focus();
+      return null;
+    }
+    return { name: name, phone: phone, heads: parseInt(raw, 10), message: $("message").value.trim() };
+  }
+
+  var submitting = false;   // 중복 제출 방지
+  var pending = null;       // 중복 연락처 확인을 기다리는 신청 내용
+  function setLoading(on) {
+    submitting = on;
+    $("submitBtn").disabled = on;
+    $("dupYes").disabled = on;
+    $("dupNo").disabled = on;
+    $("submitBtn").innerHTML = on ? "<span class='spinner'></span>보내는 중이에요…" : "신청하기";
+  }
+  function showFormError(msg) {
+    $("formError").textContent = msg;
+    $("formError").classList.toggle("hidden", !msg);
+  }
+  function send(payload, update) {
+    if (submitting) return;
+    setLoading(true);
+    showFormError("");
+    payload.update = !!update;
+    api.submit(payload).then(function (res) {
+      setLoading(false);
+      if (res && res.ok) {
+        pending = null;
+        $("dupBox").classList.add("hidden");
+        $("form").classList.add("hidden");
+        $("doneTitle").textContent = res.status === "updated" ? "신청 내용을 고쳤어요! 🎉" : "신청이 완료됐어요! 🎉";
+        $("doneDetail").textContent = payload.name + " 님, " + payload.heads + "포기로 접수했어요. 11월 29일에 만나요!";
+        $("doneFee").textContent = "예상 참가비 " + won(fee(payload.heads));
+        $("doneBox").classList.remove("hidden");
+        $("doneBox").scrollIntoView({ block: "center" });
+        if (typeof res.heads === "number") renderStatus(res);
+        loadStatus(); // 시트에서 다시 불러오기
+      } else if (res && res.status === "duplicate") {
+        pending = payload;
+        $("dupBox").classList.remove("hidden");
+        $("dupYes").focus();
+      } else if (res && res.status === "closed") {
+        applyClosed();
+      } else {
+        showFormError((res && res.message) || "저장하지 못했어요. 잠시 뒤에 다시 시도해 주세요.");
+      }
+    }).catch(function () {
+      setLoading(false);
+      showFormError("연결이 잘 안 돼요. 인터넷을 확인하고 다시 눌러 주세요.");
+    });
+  }
+  $("form").addEventListener("submit", function (e) {
+    e.preventDefault();
+    if (submitting) return;
+    if (isClosed()) { applyClosed(); return; }
+    $("dupBox").classList.add("hidden");
+    var payload = validate();
+    if (payload) send(payload, false);
+  });
+  $("dupYes").addEventListener("click", function () { if (pending) send(pending, true); });
+  $("dupNo").addEventListener("click", function () {
+    pending = null;
+    $("dupBox").classList.add("hidden");
+  });
+  $("doneAgain").addEventListener("click", function () {
+    $("doneBox").classList.add("hidden");
+    if (isClosed()) { applyClosed(); return; }
+    $("form").classList.remove("hidden");
+    $("name").focus();
+  });
+
+  /* ---------- 시작 ---------- */
+  if (MOCK) $("mockBanner").classList.remove("hidden");
+  renderFeeLive();
+  renderCalc();
+  renderShopping();
+  if (isClosed()) applyClosed();
+  loadStatus();
+})();
+</script>
+</body>
+</html>
