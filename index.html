@@ -12,12 +12,13 @@
    ===================================================================== */
 const CONFIG = {
   // Apps Script 웹앱 URL (README 3단계에서 복사한 주소). 비워 두면 가짜 데이터 모드로 동작해요.
-  APPS_SCRIPT_URL: "",
+  APPS_SCRIPT_URL: "https://script.google.com/macros/s/AKfycbziLt18-edF1l5dg_zGFQiMS5I1fAnRz_K4k-ThrJ60BnhzrWjfwecAWUiY5t8l4SMm/exec",
 
   BASE_FEE: 3000,        // 1인 기본비 (공용 위생용품, 비닐, 남는 배추 대비 여유분)
-  PER_HEAD: 16000,       // 1포기당 (절인배추 5,000 + 양념 약 11,000)
-  HEADS_PER_BOX: 8,      // 절인배추 20kg 1박스 포기 수
-  KG_PER_HEAD: 2.5,      // 절인배추 1포기 무게(kg) — 20kg 1박스 ÷ 8포기
+  PER_HEAD: 19500,       // 1포기당 (절인배추 8,500 + 양념 약 11,000)
+  HEADS_PER_BOX: 4,      // 절인배추 1박스 포기 수
+  BOX_KG: 10,            // 절인배추 1박스 무게(kg) — 10kg 34,000원짜리로 주문
+  KG_PER_HEAD: 2.5,      // 절인배추 1포기 무게(kg) — 10kg 1박스 ÷ 4포기
   DEADLINE: "2026-11-24" // 신청 마감일 (이 날 밤 12시까지 신청 가능, 한국 시간)
 };
 
@@ -381,13 +382,13 @@ const RECIPE = [
       <summary><span>산정 근거 (1포기 <span id="perHeadText"></span>원)</span></summary>
       <table>
         <tbody>
-          <tr><td>절인배추<small>20kg 온라인 약 40,000원(무료배송) ÷ 8포기 (1포기 ≈ 2.5kg)</small><span class="plinks">가격 보기 <a href="https://search.shopping.naver.com/search/all?query=%EC%A0%88%EC%9E%84%EB%B0%B0%EC%B6%94%2020kg" target="_blank" rel="noopener">절임배추 20kg</a></span></td><td class="num">5,000원</td></tr>
+          <tr><td>절인배추<small>10kg 1박스 34,000원 ÷ 4포기 (1포기 ≈ 2.5kg)</small><span class="plinks">살 곳 <a href="https://www.hwkimchi.com/m/product.html?branduid=26&amp;xcode=003&amp;mcode=000&amp;scode=&amp;type=P&amp;sort=manual&amp;current_category=003&amp;search=&amp;GfDT=bm10W1w%3D" target="_blank" rel="noopener">절임배추 10kg 상품 보기</a></span></td><td class="num">8,500원</td></tr>
           <tr><td>고춧가루 150g<small>국산 1kg 약 30,000원</small><span class="plinks">가격 보기 <a href="https://search.shopping.naver.com/search/all?query=%EA%B5%AD%EC%82%B0%20%EA%B3%A0%EC%B6%A7%EA%B0%80%EB%A3%A8%201kg" target="_blank" rel="noopener">국산 고춧가루</a></span></td><td class="num">4,500원</td></tr>
           <tr><td>무·쪽파·마늘·생강·대파<span class="plinks">가격 보기 <a href="https://search.shopping.naver.com/search/all?query=%EA%B9%80%EC%9E%A5%20%EB%AC%B4" target="_blank" rel="noopener">무</a> <a href="https://search.shopping.naver.com/search/all?query=%EC%AA%BD%ED%8C%8C%201%EB%8B%A8" target="_blank" rel="noopener">쪽파</a> <a href="https://search.shopping.naver.com/search/all?query=%EA%B5%AD%EC%82%B0%20%EA%B9%90%EB%A7%88%EB%8A%98%201kg" target="_blank" rel="noopener">깐마늘</a> <a href="https://search.shopping.naver.com/search/all?query=%EA%B5%AD%EC%82%B0%20%EC%83%9D%EA%B0%95" target="_blank" rel="noopener">생강</a> <a href="https://search.shopping.naver.com/search/all?query=%EB%8C%80%ED%8C%8C%201%EB%8B%A8" target="_blank" rel="noopener">대파</a></span></td><td class="num">4,300원</td></tr>
           <tr><td>갓·미나리·찹쌀가루<span class="plinks">가격 보기 <a href="https://search.shopping.naver.com/search/all?query=%EA%B9%80%EC%9E%A5%20%EC%B2%AD%EA%B0%93%201%EB%8B%A8" target="_blank" rel="noopener">갓</a> <a href="https://search.shopping.naver.com/search/all?query=%EB%AF%B8%EB%82%98%EB%A6%AC%201%EB%8B%A8" target="_blank" rel="noopener">미나리</a> <a href="https://search.shopping.naver.com/search/all?query=%EA%B5%AD%EC%82%B0%20%EC%B0%B9%EC%8C%80%EA%B0%80%EB%A3%A8" target="_blank" rel="noopener">찹쌀가루</a></span></td><td class="num">850원</td></tr>
           <tr><td>비건 감칠맛 재료<small>다시마·표고·국간장·매실청·된장·양파·배</small><span class="plinks">가격 보기 <a href="https://search.shopping.naver.com/search/all?query=%EA%B5%AD%EC%82%B0%20%EB%8B%A4%EC%8B%9C%EB%A7%88" target="_blank" rel="noopener">다시마</a> <a href="https://search.shopping.naver.com/search/all?query=%EA%B5%AD%EC%82%B0%20%EA%B1%B4%ED%91%9C%EA%B3%A0%EB%B2%84%EC%84%AF" target="_blank" rel="noopener">건표고</a> <a href="https://search.shopping.naver.com/search/all?query=%EA%B5%AD%EA%B0%84%EC%9E%A5" target="_blank" rel="noopener">국간장</a> <a href="https://search.shopping.naver.com/search/all?query=%EB%A7%A4%EC%8B%A4%EC%B2%AD" target="_blank" rel="noopener">매실청</a> <a href="https://search.shopping.naver.com/search/all?query=%EB%90%9C%EC%9E%A5" target="_blank" rel="noopener">된장</a> <a href="https://search.shopping.naver.com/search/all?query=%EC%96%91%ED%8C%8C" target="_blank" rel="noopener">양파</a> <a href="https://search.shopping.naver.com/search/all?query=%EC%8B%A0%EA%B3%A0%EB%B0%B0" target="_blank" rel="noopener">배</a></span></td><td class="num">800원</td></tr>
           <tr><td>온라인 배송비·여유분</td><td class="num">550원</td></tr>
-          <tr><td><b>합계</b></td><td class="num"><b>16,000원</b></td></tr>
+          <tr><td><b>합계</b></td><td class="num"><b>19,500원</b></td></tr>
         </tbody>
       </table>
       <p style="margin-top:12px">여기에 <b>1인 기본비 <span id="baseFeeText"></span>원</b>(공용 위생용품, 비닐, 남는 배추 대비 여유분)이 더해져요.</p>
@@ -480,7 +481,7 @@ const RECIPE = [
   function renderStatus(s) {
     totalHeads = s.heads;
     $("statusBig").innerHTML = "현재 <b>" + s.count + "</b>명이<br>총 <b>" + s.heads + "</b>포기를 신청했어요";
-    $("statusSub").textContent = "약 " + kg(s.heads) + " · 절인배추 약 " + boxes(s.heads) + "박스(20kg) 주문 예정";
+    $("statusSub").textContent = "약 " + kg(s.heads) + " · 절인배추 약 " + boxes(s.heads) + "박스(" + CONFIG.BOX_KG + "kg) 주문 예정";
     $("statusRetry").classList.add("hidden");
     renderShopping();
   }
@@ -517,7 +518,7 @@ const RECIPE = [
     $("shopIntro").textContent = n > 0
       ? "지금까지 신청된 총 " + n + "포기(약 " + kg(n) + ") 기준이에요. 신청이 들어오면 자동으로 바뀌어요."
       : "아직 신청이 없어요. 신청이 들어오면 자동으로 계산돼요.";
-    $("shopBox").textContent = "절인배추 " + boxes(n) + "박스 (20kg, 1박스 = " + CONFIG.HEADS_PER_BOX + "포기 · 총 " +
+    $("shopBox").textContent = "절인배추 " + boxes(n) + "박스 (" + CONFIG.BOX_KG + "kg, 1박스 = " + CONFIG.HEADS_PER_BOX + "포기 · 총 " +
       (boxes(n) * CONFIG.HEADS_PER_BOX) + "포기분)";
     $("shopBody").innerHTML = RECIPE.map(function (r) {
       var need = r.per * n;
