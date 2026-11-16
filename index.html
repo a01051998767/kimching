@@ -17,6 +17,7 @@ const CONFIG = {
   BASE_FEE: 3000,        // 1인 기본비 (공용 위생용품, 비닐, 남는 배추 대비 여유분)
   PER_HEAD: 16000,       // 1포기당 (절인배추 5,000 + 양념 약 11,000)
   HEADS_PER_BOX: 8,      // 절인배추 20kg 1박스 포기 수
+  KG_PER_HEAD: 2.5,      // 절인배추 1포기 무게(kg) — 20kg 1박스 ÷ 8포기
   DEADLINE: "2026-11-24" // 신청 마감일 (이 날 밤 12시까지 신청 가능, 한국 시간)
 };
 
@@ -27,20 +28,20 @@ const RECIPE = [
   { name: "고춧가루",        label: "150g",     per: 150,  unit: "g",  pack: 500 },
   { name: "무",              label: "1/2개",    per: 0.5,  unit: "개", pack: 1 },
   { name: "쪽파",            label: "1/10단",   per: 0.1,  unit: "단", pack: 1 },
-  { name: "깐마늘",          label: "50g",      per: 50,   unit: "g",  pack: 500 },  // 원래 표: 120g
-  { name: "생강",            label: "10g",      per: 10,   unit: "g",  pack: 100 },  // 원래 표: 40g
+  { name: "깐마늘",          label: "50g",      per: 50,   unit: "g",  pack: 500 },
+  { name: "생강",            label: "10g",      per: 10,   unit: "g",  pack: 100 },
   { name: "대파",            label: "1/10단",   per: 0.1,  unit: "단", pack: 1 },
   { name: "갓",              label: "1/20단",   per: 0.05, unit: "단", pack: 1 },
   { name: "미나리",          label: "1/20단",   per: 0.05, unit: "단", pack: 1 },
-  { name: "찹쌀가루",        label: "15g",      per: 15,   unit: "g",  pack: 500 },  // 원래 표: 50g
+  { name: "찹쌀가루",        label: "15g",      per: 15,   unit: "g",  pack: 500 },
   { name: "양파",            label: "1/4개",    per: 0.25, unit: "개", pack: 1 },
   { name: "배 (또는 사과)",  label: "1/4개",    per: 0.25, unit: "개", pack: 1 },
   { name: "다시마 (채수용)", label: "3g",       per: 3,    unit: "g",  pack: 100 },
   { name: "건표고 (채수용)", label: "1개(4g)",  per: 4,    unit: "g",  pack: 100 },
-  { name: "국간장",          label: "3큰술",    per: 45,   unit: "ml", pack: 500 },  // 원래 표: 1~2큰술
+  { name: "국간장",          label: "3큰술",    per: 45,   unit: "ml", pack: 500 },
   { name: "매실청",          label: "1큰술",    per: 15,   unit: "ml", pack: 500 },
   { name: "된장",            label: "1작은술",  per: 6,    unit: "g",  pack: 500 },
-  { name: "굵은소금 (간 맞추기)", label: "1/2큰술 안팎", per: 8, unit: "g", pack: 1000 } // 새로 추가
+  { name: "굵은소금 (간 맞추기)", label: "1/2큰술 안팎", per: 8, unit: "g", pack: 1000 }
 ];
 </script>
 <style>
@@ -205,8 +206,10 @@ const RECIPE = [
   }
   .calc-result b { display: block; font-size: 30px; color: var(--red); font-variant-numeric: tabular-nums; }
   .fee-table { font-size: 16px; }
+  .fee-table small { white-space: nowrap; }
+  .fee-table td { padding-left: 2px; padding-right: 2px; }
   .fee-table tr.me td { background: var(--green-soft); font-weight: 700; }
-  .fee-table-wrap { display: grid; grid-template-columns: 1fr 1fr; gap: 0 16px; }
+  .fee-table-wrap { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap: 0 14px; }
   footer { text-align: center; color: var(--muted); font-size: 15px; margin-top: 28px; }
 </style>
 </head>
@@ -236,6 +239,7 @@ const RECIPE = [
     </ul>
     <div class="vegan-badge">🌱 100% 비건 김치예요 — 젓갈·액젓·새우·굴이 들어가지 않아요.</div>
     <ul class="points">
+      <li>포기 수는 절인배추 기준이에요. 1포기(반으로 가른 2쪽)가 약 2.5kg이에요.</li>
       <li>절인배추를 포함한 모든 재료는 신청한 포기 수에 맞춰 온라인으로 한꺼번에 사요.</li>
       <li>참가비는 재료비를 실비로 나눠요.</li>
       <li>김치속은 참가자들이 다 같이 만들어요.</li>
@@ -273,6 +277,7 @@ const RECIPE = [
         <span class="unit">포기</span>
         <button type="button" id="headsPlus" aria-label="한 포기 늘리기">+</button>
       </div>
+      <p class="hint" id="headsKg" style="margin:6px 0 0"></p>
       <p class="err" id="headsErr" role="alert"></p>
 
       <label class="field" for="message">하고 싶은 말 <span class="opt">(선택)</span></label>
@@ -315,12 +320,12 @@ const RECIPE = [
 
     <p>젓갈 대신 <b>다시마·표고 채수, 국간장, 된장 조금, 배</b>로 감칠맛을 내요. 찹쌀풀도 채수로 쑤어요.</p>
 
-    <h3>재료 (절인배추 1포기 기준)</h3>
+    <h3>재료 (절인배추 1포기 ≈ 2.5kg 기준)</h3>
     <table>
       <thead><tr><th>재료</th><th class="num">1포기 분량</th></tr></thead>
       <tbody id="recipeBody"></tbody>
     </table>
-    <p class="hint" style="margin-top:8px">절인배추 1포기는 약 2.5kg이에요. 다시마 3g + 건표고 1개를 물 250ml에 끓이면 채수 약 200ml가 나와요. 국간장 대신 비건 액젓(콩·해조류로 만든 것)을 써도 좋아요.</p>
+    <p class="hint" style="margin-top:8px">다시마 3g + 건표고 1개를 물 250ml에 끓이면 채수 약 200ml가 나와요. 국간장 대신 비건 액젓(콩·해조류로 만든 것)을 써도 좋아요.</p>
 
     <h3>만드는 순서 (당일 흐름)</h3>
     <ol class="steps">
@@ -332,17 +337,6 @@ const RECIPE = [
     </ol>
 
     <div class="vegan-badge">🌱 비건 확인 완료 — 위 재료 17가지는 모두 식물성(채소·과일·곡물·해조류·버섯·콩 발효 양념·소금)이에요. 젓갈·액젓·새우·굴·멸치·가쓰오 육수는 쓰지 않아요.</div>
-
-    <details>
-      <summary>기준표에서 고친 부분</summary>
-      <p class="hint">20포기 기준표를 1/20로 나눈 값 중 일반적인 김장 비율과 많이 다른 것만 고쳤어요.</p>
-      <ul>
-        <li><b>깐마늘 120g → 50g</b> : 1포기에 120g은 통마늘 3통 분량이라 매운맛이 너무 강해요.</li>
-        <li><b>생강 40g → 10g</b> : 생강은 보통 마늘의 1/5 정도예요. 많으면 쓴맛이 나요.</li>
-        <li><b>찹쌀가루 50g → 15g</b> : 채수 150ml에 50g이면 풀이 아니라 떡이 돼요(가루:물 = 1:10).</li>
-        <li><b>국간장 1~2큰술 → 3큰술 + 굵은소금으로 간</b> : 젓갈이 빠진 만큼 짠맛이 모자라서 늘렸어요.</li>
-      </ul>
-    </details>
 
     <details id="shopDetails">
       <summary>장보기 목록 (신청 총 포기 수 기준)</summary>
@@ -359,7 +353,7 @@ const RECIPE = [
   <!-- ⑤ 참가비 모의계산기 -->
   <section class="card" aria-labelledby="h-calc">
     <h2 id="h-calc">참가비 모의계산기</h2>
-    <label class="field" for="calcHeads" style="margin-top:0">몇 포기 가져가실 건가요?</label>
+    <label class="field" for="calcHeads" style="margin-top:0">몇 포기 가져가실 건가요? <span class="opt">(1포기 ≈ 2.5kg)</span></label>
     <div class="stepper">
       <button type="button" id="calcMinus" aria-label="한 포기 줄이기">−</button>
       <input type="number" id="calcHeads" inputmode="numeric" min="1" step="1" value="1">
@@ -382,7 +376,7 @@ const RECIPE = [
       <summary>산정 근거 (1포기 <span id="perHeadText"></span>원)</summary>
       <table>
         <tbody>
-          <tr><td>절인배추<small>20kg 온라인 약 40,000원(무료배송) ÷ 8포기</small></td><td class="num">5,000원</td></tr>
+          <tr><td>절인배추<small>20kg 온라인 약 40,000원(무료배송) ÷ 8포기 (1포기 ≈ 2.5kg)</small></td><td class="num">5,000원</td></tr>
           <tr><td>고춧가루 150g<small>국산 1kg 약 30,000원</small></td><td class="num">4,500원</td></tr>
           <tr><td>무·쪽파·마늘·생강·대파</td><td class="num">4,300원</td></tr>
           <tr><td>갓·미나리·찹쌀가루</td><td class="num">850원</td></tr>
@@ -410,6 +404,7 @@ const RECIPE = [
   function won(n) { return Number(n).toLocaleString("ko-KR") + "원"; }
   function fee(heads) { return CONFIG.BASE_FEE + CONFIG.PER_HEAD * heads; }
   function boxes(heads) { return Math.ceil(heads / CONFIG.HEADS_PER_BOX); }
+  function kg(heads) { return (Math.round(heads * CONFIG.KG_PER_HEAD * 10) / 10) + "kg"; }
   function toHeads(v) {
     var n = parseInt(String(v).replace(/[^\d]/g, ""), 10);
     return isNaN(n) || n < 1 ? 1 : n;
@@ -478,7 +473,7 @@ const RECIPE = [
   function renderStatus(s) {
     totalHeads = s.heads;
     $("statusBig").innerHTML = "현재 <b>" + s.count + "</b>명이<br>총 <b>" + s.heads + "</b>포기를 신청했어요";
-    $("statusSub").textContent = "절인배추 약 " + boxes(s.heads) + "박스(20kg) 주문 예정";
+    $("statusSub").textContent = "약 " + kg(s.heads) + " · 절인배추 약 " + boxes(s.heads) + "박스(20kg) 주문 예정";
     $("statusRetry").classList.add("hidden");
     renderShopping();
   }
@@ -513,7 +508,7 @@ const RECIPE = [
   function renderShopping() {
     var n = totalHeads;
     $("shopIntro").textContent = n > 0
-      ? "지금까지 신청된 총 " + n + "포기 기준이에요. 신청이 들어오면 자동으로 바뀌어요."
+      ? "지금까지 신청된 총 " + n + "포기(약 " + kg(n) + ") 기준이에요. 신청이 들어오면 자동으로 바뀌어요."
       : "아직 신청이 없어요. 신청이 들어오면 자동으로 계산돼요.";
     $("shopBox").textContent = "절인배추 " + boxes(n) + "박스 (20kg, 1박스 = " + CONFIG.HEADS_PER_BOX + "포기 · 총 " +
       (boxes(n) * CONFIG.HEADS_PER_BOX) + "포기분)";
@@ -529,13 +524,13 @@ const RECIPE = [
   function renderCalc() {
     var n = toHeads($("calcHeads").value);
     $("calcFormula").textContent = "기본 " + won(CONFIG.BASE_FEE).replace("원", "") + "원 + " +
-      CONFIG.PER_HEAD.toLocaleString("ko-KR") + "원 × " + n + "포기 =";
+      CONFIG.PER_HEAD.toLocaleString("ko-KR") + "원 × " + n + "포기(약 " + kg(n) + ") =";
     $("calcTotal").textContent = "총 " + won(fee(n));
     $("calcStepNote").textContent = "1포기 늘릴 때마다 " + won(CONFIG.PER_HEAD) + "이 더 붙어요. (" +
       (n + 1) + "포기면 " + won(fee(n + 1)) + ")";
     var rows = [];
     for (var i = 1; i <= 10; i++) {
-      rows.push("<tr" + (i === n ? " class='me'" : "") + "><td>" + i + "포기</td><td class='num'>" + won(fee(i)) + "</td></tr>");
+      rows.push("<tr" + (i === n ? " class='me'" : "") + "><td>" + i + "포기<small>약 " + kg(i) + "</small></td><td class='num'>" + won(fee(i)) + "</td></tr>");
     }
     $("feeTableA").innerHTML = rows.slice(0, 5).join("");
     $("feeTableB").innerHTML = rows.slice(5).join("");
@@ -551,7 +546,11 @@ const RECIPE = [
     input.addEventListener("input", function () { if (input.value !== "") onChange(toHeads(input.value)); });
     input.addEventListener("blur", function () { set(toHeads(input.value)); });
   }
-  function renderFeeLive() { $("feeLive").textContent = won(fee(toHeads($("heads").value))); }
+  function renderFeeLive() {
+    var n = toHeads($("heads").value);
+    $("feeLive").textContent = won(fee(n));
+    $("headsKg").textContent = "절인배추 약 " + kg(n) + " (1포기 ≈ " + kg(1) + ")";
+  }
   // 신청서 포기 수 → 계산기에 자동 반영
   bindStepper($("heads"), $("headsMinus"), $("headsPlus"), function (n) {
     renderFeeLive();
@@ -617,7 +616,7 @@ const RECIPE = [
         $("dupBox").classList.add("hidden");
         $("form").classList.add("hidden");
         $("doneTitle").textContent = res.status === "updated" ? "신청 내용을 고쳤어요! 🎉" : "신청이 완료됐어요! 🎉";
-        $("doneDetail").textContent = payload.name + " 님, " + payload.heads + "포기로 접수했어요. 11월 29일에 만나요!";
+        $("doneDetail").textContent = payload.name + " 님, " + payload.heads + "포기(약 " + kg(payload.heads) + ")로 접수했어요. 11월 29일에 만나요!";
         $("doneFee").textContent = "예상 참가비 " + won(fee(payload.heads));
         $("doneBox").classList.remove("hidden");
         $("doneBox").scrollIntoView({ block: "center" });
