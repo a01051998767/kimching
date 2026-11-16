@@ -15,7 +15,7 @@ const CONFIG = {
   APPS_SCRIPT_URL: "https://script.google.com/macros/s/AKfycbziLt18-edF1l5dg_zGFQiMS5I1fAnRz_K4k-ThrJ60BnhzrWjfwecAWUiY5t8l4SMm/exec",
 
   BASE_FEE: 3000,        // 1인 참가비(점심 등) — 김장 끝나고 같이 먹는 전·라면 재료비 등
-  PER_HEAD: 17800,       // 1포기당 (절인배추 6,800 + 양념 약 11,000)
+  PER_HEAD: 16000,       // 1포기당 (절인배추 6,800 + 양념 약 9,200)
   HEADS_PER_BOX: 5,      // 절인배추 1박스 포기 수
   BOX_KG: 10,            // 절인배추 1박스 무게(kg) — 10kg 34,000원짜리로 주문
   KG_PER_HEAD: 2,        // 절인배추 1포기 무게(kg) — 10kg 1박스(4~6포기) ÷ 5포기
@@ -26,23 +26,23 @@ const CONFIG = {
    label: 화면에 보이는 1포기 분량 / per: 장보기 계산용 숫자 / unit: per의 단위
    pack: 온라인에서 사는 최소 단위(이 단위로 올림) */
 const RECIPE = [
-  { name: "고춧가루",        label: "150g",     per: 150,  unit: "g",  pack: 500 },
-  { name: "무",              label: "1/2개",    per: 0.5,  unit: "개", pack: 1 },
-  { name: "쪽파",            label: "1/10단",   per: 0.1,  unit: "단", pack: 1 },
-  { name: "깐마늘",          label: "50g",      per: 50,   unit: "g",  pack: 500 },
-  { name: "생강",            label: "10g",      per: 10,   unit: "g",  pack: 100 },
-  { name: "대파",            label: "1/10단",   per: 0.1,  unit: "단", pack: 1 },
-  { name: "갓",              label: "1/20단",   per: 0.05, unit: "단", pack: 1 },
-  { name: "미나리",          label: "1/20단",   per: 0.05, unit: "단", pack: 1 },
-  { name: "찹쌀가루",        label: "15g",      per: 15,   unit: "g",  pack: 500 },
-  { name: "양파",            label: "1/4개",    per: 0.25, unit: "개", pack: 1 },
-  { name: "배 (또는 사과)",  label: "1/4개",    per: 0.25, unit: "개", pack: 1 },
-  { name: "다시마 (채수용)", label: "3g",       per: 3,    unit: "g",  pack: 100 },
-  { name: "건표고 (채수용)", label: "1개(4g)",  per: 4,    unit: "g",  pack: 100 },
-  { name: "국간장",          label: "3큰술",    per: 45,   unit: "ml", pack: 500 },
-  { name: "매실청",          label: "1큰술",    per: 15,   unit: "ml", pack: 500 },
-  { name: "된장",            label: "1작은술",  per: 6,    unit: "g",  pack: 500 },
-  { name: "굵은소금 (간 맞추기)", label: "1/2큰술 안팎", per: 8, unit: "g", pack: 1000 }
+  { group: "양념·가루", name: "고춧가루",        label: "150g",     per: 150,  unit: "g",  pack: 500 },
+  { group: "채소·과일", name: "무",              label: "1/2개",    per: 0.5,  unit: "개", pack: 1 },
+  { group: "채소·과일", name: "쪽파",            label: "1/10단",   per: 0.1,  unit: "단", pack: 1 },
+  { group: "채소·과일", name: "깐마늘",          label: "50g",      per: 50,   unit: "g",  pack: 500 },
+  { group: "채소·과일", name: "생강",            label: "10g",      per: 10,   unit: "g",  pack: 100 },
+  { group: "채소·과일", name: "대파",            label: "1/10단",   per: 0.1,  unit: "단", pack: 1 },
+  { group: "채소·과일", name: "갓",              label: "1/20단",   per: 0.05, unit: "단", pack: 1 },
+  { group: "채소·과일", name: "미나리",          label: "1/20단",   per: 0.05, unit: "단", pack: 1 },
+  { group: "양념·가루", name: "찹쌀가루",        label: "15g",      per: 15,   unit: "g",  pack: 500 },
+  { group: "채소·과일", name: "양파",            label: "1/4개",    per: 0.25, unit: "개", pack: 1 },
+  { group: "채소·과일", name: "배 (또는 사과)",  label: "1/4개",    per: 0.25, unit: "개", pack: 1 },
+  { group: "채수 재료", name: "다시마 (채수용)", label: "3g",       per: 3,    unit: "g",  pack: 100 },
+  { group: "채수 재료", name: "건표고 (채수용)", label: "1개(4g)",  per: 4,    unit: "g",  pack: 100 },
+  { group: "양념·가루", name: "국간장",          label: "3큰술",    per: 45,   unit: "ml", pack: 500 },
+  { group: "양념·가루", name: "매실청",          label: "1큰술",    per: 15,   unit: "ml", pack: 500 },
+  { group: "양념·가루", name: "된장",            label: "1작은술",  per: 6,    unit: "g",  pack: 500 },
+  { group: "양념·가루", name: "굵은소금 (간 맞추기)", label: "1/2큰술 안팎", per: 8, unit: "g", pack: 1000 }
 ];
 </script>
 <style>
@@ -85,7 +85,7 @@ const RECIPE = [
 
   header.hero {
     background: linear-gradient(180deg, var(--green) 0%, #3f9443 100%);
-    color: #fff; padding: 32px 16px 44px; text-align: center;
+    color: #fff; padding: 28px 16px 26px; text-align: center;
   }
   header.hero p { margin: 0; font-size: 18px; opacity: .95; }
 
@@ -94,7 +94,36 @@ const RECIPE = [
     padding: 22px 18px; margin-top: 18px;
     box-shadow: 0 2px 8px rgba(80, 60, 20, .05);
   }
-  .card.first { margin-top: -22px; position: relative; }
+  .card, details.card { scroll-margin-top: 64px; }
+  .quicknav {
+    position: sticky; top: 0; z-index: 5; display: flex; gap: 4px; padding: 8px 8px;
+    background: rgba(251, 246, 236, .96); border-bottom: 1px solid var(--line);
+    overflow-x: auto; -webkit-overflow-scrolling: touch; justify-content: safe center;
+  }
+  .quicknav a {
+    flex: 0 0 auto; padding: 8px 9px; border-radius: 999px; background: #fff; border: 1px solid var(--line);
+    font-size: 15px; font-weight: 600; text-decoration: none; color: var(--green-dark); white-space: nowrap;
+  }
+  .info a { white-space: nowrap; font-size: 16px; }
+  a.btn { display: flex; align-items: center; justify-content: center; text-decoration: none; margin-top: 16px; }
+  .timeline { list-style: none; margin: 0; padding: 0 0 0 6px; }
+  .timeline > li { position: relative; padding: 0 0 20px 26px; border-left: 3px solid var(--line); }
+  .timeline > li:last-child { padding-bottom: 0; border-left-color: transparent; }
+  .timeline > li::before {
+    content: ""; position: absolute; left: -10.5px; top: 4px; width: 14px; height: 14px; border-radius: 50%;
+    background: #fff; border: 3px solid var(--green);
+  }
+  .timeline > li.past { color: var(--muted); }
+  .timeline > li.past::before { background: var(--green); }
+  .timeline > li.now::before { background: var(--red); border-color: var(--red); box-shadow: 0 0 0 5px var(--red-soft); }
+  .timeline .when { display: block; font-size: 15px; font-weight: 700; color: var(--red); }
+  .timeline > li.past .when { color: var(--muted); }
+  .timeline > li > b { font-size: 20px; }
+  .timeline small { display: block; color: var(--muted); font-size: 15px; line-height: 1.5; }
+  .tag-now { display: inline-block; margin-left: 6px; padding: 1px 8px; border-radius: 999px; background: var(--red); color: #fff; font-size: 13px; vertical-align: 2px; }
+  .dayflow { margin: 8px 0 0; padding: 12px 12px 12px 34px; background: var(--green-soft); border-radius: 12px; font-size: 17px; }
+  .dayflow li { padding: 2px 0; }
+  .shop-table tr.grp td { background: #f7f2e7; font-weight: 700; color: var(--green-dark); font-size: 15px; padding: 6px; }
 
   .info { list-style: none; padding: 0; margin: 0 0 14px; }
   .info li { display: flex; gap: 10px; padding: 9px 0; border-bottom: 1px dashed var(--line); }
@@ -227,10 +256,14 @@ const RECIPE = [
   <p>올겨울 김치, 이웃과 같이 담가요</p>
 </header>
 
+<nav class="quicknav" aria-label="바로가기">
+  <a href="#info">안내</a><a href="#schedule">일정</a><a href="#apply">신청</a><a href="#fee">참가비</a><a href="#recipe">레시피</a><a href="#shopDetails">장보기</a>
+</nav>
+
 <main>
 
   <!-- ① 안내문 -->
-  <section class="card first" aria-labelledby="h-info">
+  <section class="card" id="info" aria-labelledby="h-info">
     <h2 id="h-info">모임 안내</h2>
     <p>찬바람 불면 생각나는 김장, 혼자 하면 일이지만 같이 하면 잔치예요. 편하게 오세요!</p>
     <ul class="info">
@@ -251,10 +284,35 @@ const RECIPE = [
       <li>참가비는 재료비를 실비로 나눠요.</li>
       <li>김치속은 참가자들이 다 같이 만들어요.</li>
     </ul>
+    <a class="btn" id="goApply" href="#apply">참가 신청하러 가기 👇</a>
+  </section>
+
+  <!-- 전체 일정 -->
+  <section class="card" id="schedule" aria-labelledby="h-schedule">
+    <h2 id="h-schedule">전체 일정</h2>
+    <ol class="timeline" id="timeline">
+      <li data-until="2026-11-24"><span class="when">11월 24일(화)까지</span><b>참가 신청</b>
+        <small>이 날 밤까지 신청하고 고칠 수 있어요.</small></li>
+      <li data-until="2026-11-27"><span class="when">마감 직후</span><b>절임배추 주문</b>
+        <small>신청된 포기 수에 맞춰 박스 수를 정해 주문해요.</small></li>
+      <li data-until="2026-11-28"><span class="when">11월 28일(토)</span><b>속재료 장보기</b>
+        <small>고춧가루·채소 등을 한꺼번에 사요. 이 날 가격으로 참가비가 확정돼요.</small></li>
+      <li data-until="2026-11-29"><span class="when">11월 29일(일) 오전 10시</span><b>김장하는 날 🥬</b>
+        <ol class="dayflow">
+          <li>모여서 인사, 앞치마 두르기</li>
+          <li>채수 끓이고 찹쌀풀 쑤기</li>
+          <li>채소 썰기</li>
+          <li>양념 섞기</li>
+          <li>배추 버무리기</li>
+          <li>김치통에 담기</li>
+          <li>전 부치고 라면 끓여 점심 🍜</li>
+          <li>참가비 정산 안내, 마무리</li>
+        </ol></li>
+    </ol>
   </section>
 
   <!-- ② 현재 신청 현황 -->
-  <section class="card status" aria-labelledby="h-status" aria-live="polite">
+  <section class="card status" id="status" aria-labelledby="h-status" aria-live="polite">
     <h2 id="h-status">현재 신청 현황</h2>
     <p class="big" id="statusBig">불러오는 중이에요…</p>
     <p class="sub" id="statusSub"></p>
@@ -263,7 +321,7 @@ const RECIPE = [
   </section>
 
   <!-- ③ 참가신청서 -->
-  <section class="card" aria-labelledby="h-form">
+  <section class="card" id="apply" aria-labelledby="h-form">
     <h2 id="h-form">참가신청서</h2>
 
     <p id="formClosed" class="hidden">신청이 마감되었어요. 궁금한 점은 <a href="mailto:a01051998767@gmail.com">메일</a>로 물어봐 주세요.</p>
@@ -321,44 +379,8 @@ const RECIPE = [
     </div>
   </section>
 
-  <!-- ④ 레시피 -->
-  <details class="card" id="recipe">
-    <summary>비건 김장김치 레시피</summary>
-
-    <p>젓갈 대신 <b>다시마·표고 채수, 국간장, 된장 조금, 배</b>로 감칠맛을 내요. 찹쌀풀도 채수로 쑤어요.</p>
-
-    <h3>재료 (절인배추 1포기 ≈ 2kg 기준)</h3>
-    <table>
-      <thead><tr><th>재료</th><th class="num">1포기 분량</th></tr></thead>
-      <tbody id="recipeBody"></tbody>
-    </table>
-    <p class="hint" style="margin-top:8px">다시마 3g + 건표고 1개를 물 250ml에 끓이면 채수 약 200ml가 나와요. 국간장 대신 비건 액젓(콩·해조류로 만든 것)을 써도 좋아요.</p>
-
-    <h3>만드는 순서 (당일 흐름)</h3>
-    <ol class="steps">
-      <li><b>채수·찹쌀풀</b> — 도착하면 절인배추부터 채반에 엎어 물기를 빼요. 물에 다시마·건표고를 넣고 끓이다가 끓어오르면 약불로 10분, 다시마를 건지고 10분 더 끓여요. 식힌 채수(1포기당 150ml)에 찹쌀가루를 풀어 약불에서 저어 가며 풀을 쑤고 완전히 식혀요.</li>
-      <li><b>채소 썰기</b> — 무는 채 썰고, 쪽파·갓·미나리는 4cm 길이로, 대파는 어슷하게 썰어요. 마늘·생강·양파·배는 남은 채수와 함께 믹서에 갈아요.</li>
-      <li><b>양념 섞기</b> — 식은 찹쌀풀에 고춧가루를 먼저 풀어 20분쯤 불려요(색이 고와져요). 갈아 둔 재료, 국간장, 매실청, 된장을 넣고 섞은 뒤 무채를 넣어 버무리고, 마지막에 쪽파·갓·미나리·대파를 살살 섞어요. 맛을 보고 싱거우면 굵은소금으로 간을 맞춰요. 살짝 짭짤해야 익었을 때 딱 좋아요.</li>
-      <li><b>버무리기</b> — 배춧잎을 한 장씩 들춰 줄기 쪽에 속을 넉넉히, 잎 쪽은 살짝만 발라요. 겉잎으로 전체를 감싸 풀리지 않게 해요.</li>
-      <li><b>통에 담기</b> — 자른 면이 위로 오게 차곡차곡 담고 꾹꾹 눌러 공기를 빼요. 통의 80%만 채우고 남은 겉잎(우거지)으로 덮어요. 서늘한 곳에 하루쯤 두었다가 냉장고에 넣으면 돼요.</li>
-    </ol>
-
-    <div class="vegan-badge">🌱 비건 확인 완료 — 위 재료 17가지는 모두 식물성(채소·과일·곡물·해조류·버섯·콩 발효 양념·소금)이에요. 젓갈·액젓·새우·굴·멸치·가쓰오 육수는 쓰지 않아요.</div>
-
-    <details id="shopDetails">
-      <summary>장보기 목록 (신청 총 포기 수 기준)</summary>
-      <p id="shopIntro" class="hint"></p>
-      <div class="box-line" id="shopBox"></div>
-      <table>
-        <thead><tr><th>재료</th><th class="num">필요량</th><th class="num">살 양</th></tr></thead>
-        <tbody id="shopBody"></tbody>
-      </table>
-      <p class="hint" style="margin-top:8px">‘살 양’은 온라인에서 파는 단위로 올림한 값이에요.</p>
-    </details>
-  </details>
-
-  <!-- ⑤ 참가비 모의계산기 -->
-  <section class="card" aria-labelledby="h-calc">
+  <!-- ④ 참가비 모의계산기 -->
+  <section class="card" id="fee" aria-labelledby="h-calc">
     <h2 id="h-calc">참가비 모의계산기</h2>
     <label class="field" for="calcHeads" style="margin-top:0">몇 포기 가져가실 건가요? <span class="opt">(1포기 ≈ 2kg)</span></label>
     <div class="stepper">
@@ -386,11 +408,10 @@ const RECIPE = [
         <tbody>
           <tr><td>절인배추<small>10kg 1박스(4~6포기) 34,000원 ÷ 5포기 (1포기 ≈ 2kg)</small><span class="plinks">살 곳 <a href="https://www.hwkimchi.com/m/product.html?branduid=26&amp;xcode=003&amp;mcode=000&amp;scode=&amp;type=P&amp;sort=manual&amp;current_category=003&amp;search=&amp;GfDT=bm10W1w%3D" target="_blank" rel="noopener">절임배추 10kg 상품 보기</a></span></td><td class="num">6,800원</td></tr>
           <tr><td>고춧가루 150g<small>국산 1kg 약 30,000원</small><span class="plinks">가격 보기 <a href="https://search.shopping.naver.com/search/all?query=%EA%B5%AD%EC%82%B0%20%EA%B3%A0%EC%B6%A7%EA%B0%80%EB%A3%A8%201kg" target="_blank" rel="noopener">국산 고춧가루</a></span></td><td class="num">4,500원</td></tr>
-          <tr><td>무·쪽파·마늘·생강·대파<span class="plinks">가격 보기 <a href="https://search.shopping.naver.com/search/all?query=%EA%B9%80%EC%9E%A5%20%EB%AC%B4" target="_blank" rel="noopener">무</a> <a href="https://search.shopping.naver.com/search/all?query=%EC%AA%BD%ED%8C%8C%201%EB%8B%A8" target="_blank" rel="noopener">쪽파</a> <a href="https://search.shopping.naver.com/search/all?query=%EA%B5%AD%EC%82%B0%20%EA%B9%90%EB%A7%88%EB%8A%98%201kg" target="_blank" rel="noopener">깐마늘</a> <a href="https://search.shopping.naver.com/search/all?query=%EA%B5%AD%EC%82%B0%20%EC%83%9D%EA%B0%95" target="_blank" rel="noopener">생강</a> <a href="https://search.shopping.naver.com/search/all?query=%EB%8C%80%ED%8C%8C%201%EB%8B%A8" target="_blank" rel="noopener">대파</a></span></td><td class="num">4,300원</td></tr>
+          <tr><td>무·쪽파·마늘·생강·대파<span class="plinks">가격 보기 <a href="https://search.shopping.naver.com/search/all?query=%EA%B9%80%EC%9E%A5%20%EB%AC%B4" target="_blank" rel="noopener">무</a> <a href="https://search.shopping.naver.com/search/all?query=%EC%AA%BD%ED%8C%8C%201%EB%8B%A8" target="_blank" rel="noopener">쪽파</a> <a href="https://search.shopping.naver.com/search/all?query=%EA%B5%AD%EC%82%B0%20%EA%B9%90%EB%A7%88%EB%8A%98%201kg" target="_blank" rel="noopener">깐마늘</a> <a href="https://search.shopping.naver.com/search/all?query=%EA%B5%AD%EC%82%B0%20%EC%83%9D%EA%B0%95" target="_blank" rel="noopener">생강</a> <a href="https://search.shopping.naver.com/search/all?query=%EB%8C%80%ED%8C%8C%201%EB%8B%A8" target="_blank" rel="noopener">대파</a></span></td><td class="num">3,050원</td></tr>
           <tr><td>갓·미나리·찹쌀가루<span class="plinks">가격 보기 <a href="https://search.shopping.naver.com/search/all?query=%EA%B9%80%EC%9E%A5%20%EC%B2%AD%EA%B0%93%201%EB%8B%A8" target="_blank" rel="noopener">갓</a> <a href="https://search.shopping.naver.com/search/all?query=%EB%AF%B8%EB%82%98%EB%A6%AC%201%EB%8B%A8" target="_blank" rel="noopener">미나리</a> <a href="https://search.shopping.naver.com/search/all?query=%EA%B5%AD%EC%82%B0%20%EC%B0%B9%EC%8C%80%EA%B0%80%EB%A3%A8" target="_blank" rel="noopener">찹쌀가루</a></span></td><td class="num">850원</td></tr>
           <tr><td>비건 감칠맛 재료<small>다시마·표고·국간장·매실청·된장·양파·배</small><span class="plinks">가격 보기 <a href="https://search.shopping.naver.com/search/all?query=%EA%B5%AD%EC%82%B0%20%EB%8B%A4%EC%8B%9C%EB%A7%88" target="_blank" rel="noopener">다시마</a> <a href="https://search.shopping.naver.com/search/all?query=%EA%B5%AD%EC%82%B0%20%EA%B1%B4%ED%91%9C%EA%B3%A0%EB%B2%84%EC%84%AF" target="_blank" rel="noopener">건표고</a> <a href="https://search.shopping.naver.com/search/all?query=%EA%B5%AD%EA%B0%84%EC%9E%A5" target="_blank" rel="noopener">국간장</a> <a href="https://search.shopping.naver.com/search/all?query=%EB%A7%A4%EC%8B%A4%EC%B2%AD" target="_blank" rel="noopener">매실청</a> <a href="https://search.shopping.naver.com/search/all?query=%EB%90%9C%EC%9E%A5" target="_blank" rel="noopener">된장</a> <a href="https://search.shopping.naver.com/search/all?query=%EC%96%91%ED%8C%8C" target="_blank" rel="noopener">양파</a> <a href="https://search.shopping.naver.com/search/all?query=%EC%8B%A0%EA%B3%A0%EB%B0%B0" target="_blank" rel="noopener">배</a></span></td><td class="num">800원</td></tr>
-          <tr><td>온라인 배송비·여유분</td><td class="num">550원</td></tr>
-          <tr><td><b>합계</b></td><td class="num"><b>17,800원</b></td></tr>
+          <tr><td><b>합계</b></td><td class="num"><b>16,000원</b></td></tr>
         </tbody>
       </table>
       <p style="margin-top:12px">여기에 <b>1인 참가비(점심 등) <span id="baseFeeText"></span>원</b>이 더해져요. 김장 끝나고 다 같이 전 부치고 라면 끓여 먹는 데 써요 🍜</p>
@@ -399,6 +420,44 @@ const RECIPE = [
       <p><b>실제 구매가로 정산해서 차액이 생기면 행사 당일 알려드려요.</b></p>
     </details>
   </section>
+
+  <!-- ⑤ 레시피 -->
+  <details class="card" id="recipe">
+    <summary>비건 김장김치 레시피</summary>
+
+    <p>젓갈 대신 <b>다시마·표고 채수, 국간장, 된장 조금, 배</b>로 감칠맛을 내요. 찹쌀풀도 채수로 쑤어요.</p>
+
+    <h3>재료 (절인배추 1포기 ≈ 2kg 기준)</h3>
+    <table>
+      <thead><tr><th>재료</th><th class="num">1포기 분량</th></tr></thead>
+      <tbody id="recipeBody"></tbody>
+    </table>
+    <p class="hint" style="margin-top:8px">다시마 3g + 건표고 1개를 물 250ml에 끓이면 채수 약 200ml가 나와요. 국간장 대신 비건 액젓(콩·해조류로 만든 것)을 써도 좋아요.</p>
+
+    <h3>만드는 순서 (당일 흐름)</h3>
+    <ol class="steps">
+      <li><b>채수·찹쌀풀</b> — 도착하면 절인배추부터 채반에 엎어 물기를 빼요. 물에 다시마·건표고를 넣고 끓이다가 끓어오르면 약불로 10분, 다시마를 건지고 10분 더 끓여요. 식힌 채수(1포기당 150ml)에 찹쌀가루를 풀어 약불에서 저어 가며 풀을 쑤고 완전히 식혀요.</li>
+      <li><b>채소 썰기</b> — 무는 채 썰고, 쪽파·갓·미나리는 4cm 길이로, 대파는 어슷하게 썰어요. 마늘·생강·양파·배는 남은 채수와 함께 믹서에 갈아요.</li>
+      <li><b>양념 섞기</b> — 식은 찹쌀풀에 고춧가루를 먼저 풀어 20분쯤 불려요(색이 고와져요). 갈아 둔 재료, 국간장, 매실청, 된장을 넣고 섞은 뒤 무채를 넣어 버무리고, 마지막에 쪽파·갓·미나리·대파를 살살 섞어요. 맛을 보고 싱거우면 굵은소금으로 간을 맞춰요. 살짝 짭짤해야 익었을 때 딱 좋아요.</li>
+      <li><b>버무리기</b> — 배춧잎을 한 장씩 들춰 줄기 쪽에 속을 넉넉히, 잎 쪽은 살짝만 발라요. 겉잎으로 전체를 감싸 풀리지 않게 해요.</li>
+      <li><b>통에 담기</b> — 자른 면이 위로 오게 차곡차곡 담고 꾹꾹 눌러 공기를 빼요. 통의 80%만 채우고 남은 겉잎(우거지)으로 덮어요. 서늘한 곳에 하루쯤 두었다가 냉장고에 넣으면 돼요.</li>
+    </ol>
+
+    <div class="vegan-badge">🌱 비건 확인 완료 — 위 재료 17가지는 모두 식물성(채소·과일·곡물·해조류·버섯·콩 발효 양념·소금)이에요. 젓갈·액젓·새우·굴·멸치·가쓰오 육수는 쓰지 않아요.</div>
+
+  </details>
+
+  <!-- ⑥ 속재료 장보기 목록 (신청된 총 포기 수 기준) -->
+  <details class="card" id="shopDetails" open>
+    <summary>속재료 장보기 목록</summary>
+    <p id="shopIntro"></p>
+    <div class="box-line" id="shopBox"></div>
+    <table class="shop-table">
+      <thead><tr><th>재료</th><th class="num">필요한 양</th><th class="num">살 양</th></tr></thead>
+      <tbody id="shopBody"></tbody>
+    </table>
+    <p class="hint" style="margin-top:8px">‘필요한 양’은 1포기 분량 × 신청된 포기 수, ‘살 양’은 온라인에서 파는 단위로 올림한 값이에요. 신청이 들어올 때마다 자동으로 바뀌어요.</p>
+  </details>
 
   <footer>함께 담그는 비건 김장 · 문의 <a href="mailto:a01051998767@gmail.com">a01051998767@gmail.com</a></footer>
 </main>
@@ -504,6 +563,7 @@ const RECIPE = [
   });
 
   function applyClosed() {
+    $("goApply").classList.add("hidden");
     $("closedMsg").classList.remove("hidden");
     $("form").classList.add("hidden");
     $("dupBox").classList.add("hidden");
@@ -518,14 +578,18 @@ const RECIPE = [
   function renderShopping() {
     var n = totalHeads;
     $("shopIntro").textContent = n > 0
-      ? "지금까지 신청된 총 " + n + "포기(약 " + kg(n) + ") 기준이에요. 신청이 들어오면 자동으로 바뀌어요."
+      ? "지금까지 신청된 총 " + n + "포기(약 " + kg(n) + ")를 담그려면 이만큼 사야 해요."
       : "아직 신청이 없어요. 신청이 들어오면 자동으로 계산돼요.";
     $("shopBox").textContent = "절인배추 " + boxes(n) + "박스 (" + CONFIG.BOX_KG + "kg, 1박스 = " + CONFIG.HEADS_PER_BOX + "포기 · 총 " +
       (boxes(n) * CONFIG.HEADS_PER_BOX) + "포기분)";
-    $("shopBody").innerHTML = RECIPE.map(function (r) {
+    var order = ["채소·과일", "양념·가루", "채수 재료"], lastGroup = "";
+    var list = RECIPE.slice().sort(function (a, b) { return order.indexOf(a.group) - order.indexOf(b.group); });
+    $("shopBody").innerHTML = list.map(function (r) {
       var need = r.per * n;
       var buy = Math.ceil(Math.round(need / r.pack * 1e6) / 1e6) * r.pack;
-      return "<tr><td>" + r.name + "</td><td class='num'>" + fmtQty(need, r.unit) +
+      var head = r.group !== lastGroup ? "<tr class='grp'><td colspan='3'>" + r.group + "</td></tr>" : "";
+      lastGroup = r.group;
+      return head + "<tr><td>" + r.name + "</td><td class='num'>" + fmtQty(need, r.unit) +
         "</td><td class='num'><b>" + fmtQty(buy, r.unit) + "</b></td></tr>";
     }).join("");
   }
@@ -665,6 +729,21 @@ const RECIPE = [
     $("form").classList.remove("hidden");
     $("name").focus();
   });
+
+  /* ---------- 전체 일정: 지난 단계·지금 단계 표시 ---------- */
+  (function () {
+    var now = params.get("today") ? new Date(params.get("today") + "T12:00:00+09:00") : new Date();
+    var found = false;
+    Array.prototype.forEach.call(document.querySelectorAll("#timeline > li"), function (li) {
+      var end = new Date(li.getAttribute("data-until") + "T23:59:59+09:00");
+      if (now > end) { li.classList.add("past"); return; }
+      if (!found) {
+        found = true;
+        li.classList.add("now");
+        li.querySelector("b").insertAdjacentHTML("beforeend", "<span class='tag-now'>지금</span>");
+      }
+    });
+  })();
 
   /* ---------- 시작 ---------- */
   if (MOCK) $("mockBanner").classList.remove("hidden");
