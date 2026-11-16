@@ -71,7 +71,7 @@ const RECIPE = [
     overflow-wrap: anywhere;
   }
   main { max-width: 560px; margin: 0 auto; padding: 0 16px 48px; }
-  h1 { font-size: 30px; line-height: 1.3; margin: 0 0 8px; text-wrap: balance; }
+  h1 { font-size: 30px; line-height: 1.3; margin: 0; text-wrap: balance; }
   h2 { font-size: 23px; margin: 0 0 14px; color: var(--green-dark); }
   h3 { font-size: 19px; margin: 22px 0 8px; }
   p { margin: 0 0 12px; }
@@ -87,7 +87,6 @@ const RECIPE = [
     background: linear-gradient(180deg, var(--green) 0%, #3f9443 100%);
     color: #fff; padding: 28px 16px 26px; text-align: center;
   }
-  header.hero p { margin: 0; font-size: 18px; opacity: .95; }
 
   .card {
     background: var(--card); border: 1px solid var(--line); border-radius: 18px;
@@ -254,7 +253,6 @@ const RECIPE = [
 
 <header class="hero">
   <h1>함께 담그는 비건 행복김치 🥬</h1>
-  <p>올겨울 김치, 이웃과 같이 담가요</p>
 </header>
 
 <nav class="quicknav" aria-label="바로가기">
@@ -266,16 +264,16 @@ const RECIPE = [
   <!-- ① 안내문 -->
   <section class="card" id="info" aria-labelledby="h-info">
     <h2 id="h-info">모임 안내</h2>
-    <p>찬바람 불면 생각나는 김장, 혼자 하면 일이지만 같이 하면 잔치예요. 편하게 오세요!</p>
+    <p>절임배추와 속재료를 한꺼번에 사서, 한자리에 모여 같이 김치를 담그는 모임이에요.</p>
     <ul class="info">
       <li><span class="k">일시</span><span>2026년 11월 29일(일) 오전 10시</span></li>
       <li><span class="k">장소</span><span>건영3차아파트 7동 904호
         <small>서울 관악구 신림로3길 40 · <a href="https://map.naver.com/p/search/%EC%84%9C%EC%9A%B8%20%EA%B4%80%EC%95%85%EA%B5%AC%20%EC%8B%A0%EB%A6%BC%EB%A1%9C3%EA%B8%B8%2040" target="_blank" rel="noopener">지도 보기</a></small>
-        <small>🚌 주차 자리가 넉넉하지 않아요. 번거로우시겠지만 버스나 지하철로 오시면 훨씬 편해요.</small></span></li>
+        <small>주차가 어려워서, 버스나 지하철로 오시는 걸 추천드려요.</small></span></li>
       <li><span class="k">신청 마감</span><span>2026년 11월 24일(화)
         <small>절인배추 받을 날짜를 정해서 미리 주문해야 해서요.</small></span></li>
       <li><span class="k">점심</span><span>김장 끝나고 다 같이 비건 전 부치고 비건 라면 끓여 먹어요 🍜
-        <small>점심도 100% 비건으로 준비하니 안심하고 드세요 🌱</small>
+        <small>점심도 100% 비건으로 준비해요.</small>
         <small>참가비(점심 등) 3,000원에 들어 있어요. 따로 챙겨 오실 건 없어요.</small></span></li>
       <li><span class="k">준비물</span><span>앞치마, 고무장갑, 김치통
         <small>가져갈 포기 수에 맞는 크기로요. 1포기에 약 3~4L예요.</small></span></li>
@@ -288,7 +286,7 @@ const RECIPE = [
       <li>참가비는 재료비를 실비로 나눠요.</li>
       <li>김치속은 참가자들이 다 같이 만들어요.</li>
     </ul>
-    <a class="btn" id="goApply" href="#apply">참가 신청하러 가기 👇</a>
+    <a class="btn" id="goApply" href="#apply">참가 신청하러 가기</a>
   </section>
 
   <!-- 전체 일정 -->
@@ -309,7 +307,7 @@ const RECIPE = [
           <li>양념 섞기</li>
           <li>배추 버무리기</li>
           <li>김치통에 담기</li>
-          <li>비건 전 부치고 비건 라면 끓여 점심 🍜</li>
+          <li>비건 전 부치고 비건 라면 끓여 점심</li>
           <li>참가비 정산 안내, 마무리</li>
         </ol></li>
     </ol>
@@ -359,7 +357,7 @@ const RECIPE = [
       </label>
       <p class="err" id="consentErr" role="alert"></p>
 
-      <div class="fee-live">예상 참가비: <b id="feeLive">0원</b><small style="display:block;font-size:15px;color:var(--muted)">참가비(점심 등) 3,000원 포함 🍜</small></div>
+      <div class="fee-live">예상 참가비: <b id="feeLive">0원</b><small style="display:block;font-size:15px;color:var(--muted)">참가비(점심 등) 3,000원 포함</small></div>
 
       <button type="submit" class="btn" id="submitBtn">신청하기</button>
       <p class="form-error hidden" id="formError" role="alert"></p>
@@ -375,7 +373,7 @@ const RECIPE = [
     </div>
 
     <div class="notice done hidden" id="doneBox" role="status">
-      <p style="font-size:22px;font-weight:700;margin-bottom:6px" id="doneTitle">신청이 완료됐어요! 🎉</p>
+      <p style="font-size:22px;font-weight:700;margin-bottom:6px" id="doneTitle">신청이 완료됐어요</p>
       <p id="doneDetail"></p>
       <p class="fee" id="doneFee"></p>
       <p class="hint">장은 11월 28일에 봐서 금액이 조금 달라질 수 있어요. 실제 구매가로 정산해서 차액이 생기면 행사 당일 알려드려요.<br>내용을 바꾸고 싶으면 같은 연락처로 다시 신청하면 돼요.</p>
@@ -418,9 +416,9 @@ const RECIPE = [
           <tr><td><b>합계</b></td><td class="num"><b>16,000원</b></td></tr>
         </tbody>
       </table>
-      <p style="margin-top:12px">여기에 <b>1인 참가비(점심 등) <span id="baseFeeText"></span>원</b>이 더해져요. 김장 끝나고 다 같이 비건 전 부치고 비건 라면 끓여 먹는 데 써요 🍜</p>
+      <p style="margin-top:12px">여기에 <b>1인 참가비(점심 등) <span id="baseFeeText"></span>원</b>이 더해져요. 김장 끝나고 다 같이 비건 전 부치고 비건 라면 끓여 먹는 데 써요.</p>
       <p class="hint">‘가격 보기’를 누르면 네이버쇼핑에서 그 재료의 지금 온라인 가격을 볼 수 있어요. 채소 평균 시세는 <a href="https://www.kamis.or.kr" target="_blank" rel="noopener">농산물유통정보(KAMIS)</a>에서도 확인할 수 있어요.</p>
-      <p class="soft-note">🛒 장은 <b>11월 28일</b>에 봐요. 채소 값은 날마다 조금씩 오르내려서, 지금 보이는 금액과 조금 달라질 수 있어요. 너그러이 양해 부탁드려요 🙏</p>
+      <p class="soft-note">🛒 장은 <b>11월 28일</b>에 봐요. 채소 값은 날마다 조금씩 오르내려서, 지금 보이는 금액과 조금 달라질 수 있어요.</p>
       <p><b>실제 구매가로 정산해서 차액이 생기면 행사 당일 알려드려요.</b></p>
     </details>
   </section>
@@ -442,7 +440,7 @@ const RECIPE = [
     <ol class="steps">
       <li><b>채수·찹쌀풀</b> — 도착하면 절인배추부터 채반에 엎어 물기를 빼요. 물에 다시마·건표고를 넣고 끓이다가 끓어오르면 약불로 10분, 다시마를 건지고 10분 더 끓여요. 식힌 채수(1포기당 150ml)에 찹쌀가루를 풀어 약불에서 저어 가며 풀을 쑤고 완전히 식혀요.</li>
       <li><b>채소 썰기</b> — 무는 채 썰고, 쪽파·갓·미나리는 4cm 길이로, 대파는 어슷하게 썰어요. 마늘·생강·양파·배는 남은 채수와 함께 믹서에 갈아요.</li>
-      <li><b>양념 섞기</b> — 식은 찹쌀풀에 고춧가루를 먼저 풀어 20분쯤 불려요(색이 고와져요). 갈아 둔 재료, 국간장, 매실청, 된장을 넣고 섞은 뒤 무채를 넣어 버무리고, 마지막에 쪽파·갓·미나리·대파를 살살 섞어요. 맛을 보고 싱거우면 굵은소금으로 간을 맞춰요. 살짝 짭짤해야 익었을 때 딱 좋아요.</li>
+      <li><b>양념 섞기</b> — 식은 찹쌀풀에 고춧가루를 먼저 풀어 20분쯤 불려요(색이 고와져요). 갈아 둔 재료, 국간장, 매실청, 된장을 넣고 섞은 뒤 무채를 넣어 버무리고, 마지막에 쪽파·갓·미나리·대파를 살살 섞어요. 맛을 보고 싱거우면 굵은소금으로 간을 맞춰요. 살짝 짭짤해야 익었을 때 간이 맞아요.</li>
       <li><b>버무리기</b> — 배춧잎을 한 장씩 들춰 줄기 쪽에 속을 넉넉히, 잎 쪽은 살짝만 발라요. 겉잎으로 전체를 감싸 풀리지 않게 해요.</li>
       <li><b>통에 담기</b> — 자른 면이 위로 오게 차곡차곡 담고 꾹꾹 눌러 공기를 빼요. 통의 80%만 채우고 남은 겉잎(우거지)으로 덮어요. 서늘한 곳에 하루쯤 두었다가 냉장고에 넣으면 돼요.</li>
     </ol>
@@ -693,8 +691,8 @@ const RECIPE = [
         pending = null;
         $("dupBox").classList.add("hidden");
         $("form").classList.add("hidden");
-        $("doneTitle").textContent = res.status === "updated" ? "신청 내용을 고쳤어요! 🎉" : "신청이 완료됐어요! 🎉";
-        $("doneDetail").textContent = payload.name + " 님, " + payload.heads + "포기(약 " + kg(payload.heads) + ")로 접수했어요. 11월 29일에 만나요!";
+        $("doneTitle").textContent = res.status === "updated" ? "신청 내용을 고쳤어요" : "신청이 완료됐어요";
+        $("doneDetail").textContent = payload.name + " 님, " + payload.heads + "포기(약 " + kg(payload.heads) + ")로 접수했어요. 11월 29일에 봬요.";
         $("doneFee").textContent = "예상 참가비 " + won(fee(payload.heads));
         $("doneBox").classList.remove("hidden");
         $("doneBox").scrollIntoView({ block: "center" });
