@@ -198,6 +198,10 @@ const RECIPE = [
   ol.steps li { margin-bottom: 12px; }
   ol.steps b { color: var(--green-dark); }
   .hint { color: var(--muted); font-size: 15px; }
+  .plinks { display: block; font-size: 15px; color: var(--muted); margin-top: 4px; line-height: 2.1; }
+  .plinks a { display: inline-block; padding: 0 9px; margin: 0 2px 4px 0; border: 1px solid #bfdcb6; border-radius: 999px;
+    background: var(--green-soft); text-decoration: none; font-weight: 600; white-space: nowrap; }
+  .soft-note { background: #fff8e1; border: 1px solid #f0dc9a; border-radius: 12px; padding: 12px 14px; font-size: 16px; }
   .box-line { background: var(--red-soft); border-radius: 12px; padding: 12px 14px; font-weight: 700; margin-bottom: 8px; }
 
   .calc-result {
@@ -309,7 +313,7 @@ const RECIPE = [
       <p style="font-size:22px;font-weight:700;margin-bottom:6px" id="doneTitle">신청이 완료됐어요! 🎉</p>
       <p id="doneDetail"></p>
       <p class="fee" id="doneFee"></p>
-      <p class="hint">실제 구매가로 정산해서 차액이 생기면 행사 당일 알려드려요.<br>내용을 바꾸고 싶으면 같은 연락처로 다시 신청하면 돼요.</p>
+      <p class="hint">장은 11월 28일에 봐서 금액이 조금 달라질 수 있어요. 실제 구매가로 정산해서 차액이 생기면 행사 당일 알려드려요.<br>내용을 바꾸고 싶으면 같은 연락처로 다시 신청하면 돼요.</p>
       <button type="button" class="btn ghost" id="doneAgain">신청서 다시 쓰기</button>
     </div>
   </section>
@@ -365,6 +369,7 @@ const RECIPE = [
       <b id="calcTotal"></b>
     </div>
     <p class="hint" id="calcStepNote"></p>
+    <p class="soft-note">🛒 장은 <b>11월 28일</b>에 볼 거라, 그날 가격에 따라 참가비가 지금 금액과 조금 달라질 수 있어요. 차액은 행사 당일 알려드릴게요.</p>
 
     <h3>1~10포기 참가비</h3>
     <div class="fee-table-wrap">
@@ -373,19 +378,21 @@ const RECIPE = [
     </div>
 
     <details style="margin-top:16px">
-      <summary>산정 근거 (1포기 <span id="perHeadText"></span>원)</summary>
+      <summary><span>산정 근거 (1포기 <span id="perHeadText"></span>원)</span></summary>
       <table>
         <tbody>
-          <tr><td>절인배추<small>20kg 온라인 약 40,000원(무료배송) ÷ 8포기 (1포기 ≈ 2.5kg)</small></td><td class="num">5,000원</td></tr>
-          <tr><td>고춧가루 150g<small>국산 1kg 약 30,000원</small></td><td class="num">4,500원</td></tr>
-          <tr><td>무·쪽파·마늘·생강·대파</td><td class="num">4,300원</td></tr>
-          <tr><td>갓·미나리·찹쌀가루</td><td class="num">850원</td></tr>
-          <tr><td>비건 감칠맛 재료<small>다시마·표고·국간장·된장·배 등</small></td><td class="num">800원</td></tr>
+          <tr><td>절인배추<small>20kg 온라인 약 40,000원(무료배송) ÷ 8포기 (1포기 ≈ 2.5kg)</small><span class="plinks">가격 보기 <a href="https://search.shopping.naver.com/search/all?query=%EC%A0%88%EC%9E%84%EB%B0%B0%EC%B6%94%2020kg" target="_blank" rel="noopener">절임배추 20kg</a></span></td><td class="num">5,000원</td></tr>
+          <tr><td>고춧가루 150g<small>국산 1kg 약 30,000원</small><span class="plinks">가격 보기 <a href="https://search.shopping.naver.com/search/all?query=%EA%B5%AD%EC%82%B0%20%EA%B3%A0%EC%B6%A7%EA%B0%80%EB%A3%A8%201kg" target="_blank" rel="noopener">국산 고춧가루</a></span></td><td class="num">4,500원</td></tr>
+          <tr><td>무·쪽파·마늘·생강·대파<span class="plinks">가격 보기 <a href="https://search.shopping.naver.com/search/all?query=%EA%B9%80%EC%9E%A5%20%EB%AC%B4" target="_blank" rel="noopener">무</a> <a href="https://search.shopping.naver.com/search/all?query=%EC%AA%BD%ED%8C%8C%201%EB%8B%A8" target="_blank" rel="noopener">쪽파</a> <a href="https://search.shopping.naver.com/search/all?query=%EA%B5%AD%EC%82%B0%20%EA%B9%90%EB%A7%88%EB%8A%98%201kg" target="_blank" rel="noopener">깐마늘</a> <a href="https://search.shopping.naver.com/search/all?query=%EA%B5%AD%EC%82%B0%20%EC%83%9D%EA%B0%95" target="_blank" rel="noopener">생강</a> <a href="https://search.shopping.naver.com/search/all?query=%EB%8C%80%ED%8C%8C%201%EB%8B%A8" target="_blank" rel="noopener">대파</a></span></td><td class="num">4,300원</td></tr>
+          <tr><td>갓·미나리·찹쌀가루<span class="plinks">가격 보기 <a href="https://search.shopping.naver.com/search/all?query=%EA%B9%80%EC%9E%A5%20%EC%B2%AD%EA%B0%93%201%EB%8B%A8" target="_blank" rel="noopener">갓</a> <a href="https://search.shopping.naver.com/search/all?query=%EB%AF%B8%EB%82%98%EB%A6%AC%201%EB%8B%A8" target="_blank" rel="noopener">미나리</a> <a href="https://search.shopping.naver.com/search/all?query=%EA%B5%AD%EC%82%B0%20%EC%B0%B9%EC%8C%80%EA%B0%80%EB%A3%A8" target="_blank" rel="noopener">찹쌀가루</a></span></td><td class="num">850원</td></tr>
+          <tr><td>비건 감칠맛 재료<small>다시마·표고·국간장·매실청·된장·양파·배</small><span class="plinks">가격 보기 <a href="https://search.shopping.naver.com/search/all?query=%EA%B5%AD%EC%82%B0%20%EB%8B%A4%EC%8B%9C%EB%A7%88" target="_blank" rel="noopener">다시마</a> <a href="https://search.shopping.naver.com/search/all?query=%EA%B5%AD%EC%82%B0%20%EA%B1%B4%ED%91%9C%EA%B3%A0%EB%B2%84%EC%84%AF" target="_blank" rel="noopener">건표고</a> <a href="https://search.shopping.naver.com/search/all?query=%EA%B5%AD%EA%B0%84%EC%9E%A5" target="_blank" rel="noopener">국간장</a> <a href="https://search.shopping.naver.com/search/all?query=%EB%A7%A4%EC%8B%A4%EC%B2%AD" target="_blank" rel="noopener">매실청</a> <a href="https://search.shopping.naver.com/search/all?query=%EB%90%9C%EC%9E%A5" target="_blank" rel="noopener">된장</a> <a href="https://search.shopping.naver.com/search/all?query=%EC%96%91%ED%8C%8C" target="_blank" rel="noopener">양파</a> <a href="https://search.shopping.naver.com/search/all?query=%EC%8B%A0%EA%B3%A0%EB%B0%B0" target="_blank" rel="noopener">배</a></span></td><td class="num">800원</td></tr>
           <tr><td>온라인 배송비·여유분</td><td class="num">550원</td></tr>
           <tr><td><b>합계</b></td><td class="num"><b>16,000원</b></td></tr>
         </tbody>
       </table>
       <p style="margin-top:12px">여기에 <b>1인 기본비 <span id="baseFeeText"></span>원</b>(공용 위생용품, 비닐, 남는 배추 대비 여유분)이 더해져요.</p>
+      <p class="hint">‘가격 보기’를 누르면 네이버쇼핑에서 그 재료의 지금 온라인 가격을 볼 수 있어요. 채소 평균 시세는 <a href="https://www.kamis.or.kr" target="_blank" rel="noopener">농산물유통정보(KAMIS)</a>에서도 확인할 수 있어요.</p>
+      <p class="soft-note">🛒 장은 <b>11월 28일</b>에 봐요. 채소 값은 날마다 조금씩 오르내려서, 지금 보이는 금액과 조금 달라질 수 있어요. 너그러이 양해 부탁드려요 🙏</p>
       <p><b>실제 구매가로 정산해서 차액이 생기면 행사 당일 알려드려요.</b></p>
     </details>
   </section>
