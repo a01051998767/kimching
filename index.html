@@ -14,8 +14,8 @@ const CONFIG = {
   // Apps Script 웹앱 URL (README 3단계에서 복사한 주소). 비워 두면 가짜 데이터 모드로 동작해요.
   APPS_SCRIPT_URL: "https://script.google.com/macros/s/AKfycbziLt18-edF1l5dg_zGFQiMS5I1fAnRz_K4k-ThrJ60BnhzrWjfwecAWUiY5t8l4SMm/exec",
 
-  BASE_FEE: 3000,        // 1인 참가비(점심 등) — 김장 끝나고 같이 먹는 전·라면 재료비 등
-  PER_HEAD: 16000,       // 1포기당 (절인배추 6,800 + 양념 약 9,200)
+  BASE_FEE: 3000,        // 1인 기본비 — 점심(비건 전·라면)과 기타 부재료
+  PER_HEAD: 16000,       // 1포기당 재료비 (절인배추 6,800 + 양념 약 9,200)
   HEADS_PER_BOX: 5,      // 절인배추 1박스 포기 수
   BOX_KG: 10,            // 절인배추 1박스 무게(kg) — 10kg 34,000원짜리로 주문
   KG_PER_HEAD: 2,        // 절인배추 1포기 무게(kg) — 10kg 1박스(4~6포기) ÷ 5포기
@@ -33,7 +33,6 @@ const RECIPE = [
   { group: "채소·과일", name: "생강",            label: "10g",      per: 10,   unit: "g",  pack: 100 },
   { group: "채소·과일", name: "대파",            label: "1/10단",   per: 0.1,  unit: "단", pack: 1 },
   { group: "채소·과일", name: "갓",              label: "1/20단",   per: 0.05, unit: "단", pack: 1 },
-  { group: "채소·과일", name: "미나리",          label: "1/20단",   per: 0.05, unit: "단", pack: 1 },
   { group: "양념·가루", name: "찹쌀가루",        label: "15g",      per: 15,   unit: "g",  pack: 500 },
   { group: "채소·과일", name: "양파",            label: "1/4개",    per: 0.25, unit: "개", pack: 1 },
   { group: "채소·과일", name: "배 (또는 사과)",  label: "1/4개",    per: 0.25, unit: "개", pack: 1 },
@@ -275,14 +274,14 @@ const RECIPE = [
     <h2 id="h-info">모임 안내</h2>
     <ul class="info">
       <li><span class="k">일시</span><span>2026년 11월 29일(일) 오전 10시</span></li>
-      <li><span class="k">장소</span><span>건영3차아파트 7동 904호
-        <small>서울 관악구 신림로3길 40 · <a href="https://map.naver.com/p/search/%EC%84%9C%EC%9A%B8%20%EA%B4%80%EC%95%85%EA%B5%AC%20%EC%8B%A0%EB%A6%BC%EB%A1%9C3%EA%B8%B8%2040" target="_blank" rel="noopener">지도 보기</a></small>
+      <li><span class="k">장소</span><span>서울 관악구 신림로3길 40, 건영3차아파트 7동 904호
+        <small><a href="https://map.naver.com/p/search/%EC%84%9C%EC%9A%B8%20%EA%B4%80%EC%95%85%EA%B5%AC%20%EC%8B%A0%EB%A6%BC%EB%A1%9C3%EA%B8%B8%2040" target="_blank" rel="noopener">지도 보기</a></small>
         <small>주차가 어려워서, 버스나 지하철로 오시는 걸 추천드려요.</small></span></li>
       <li><span class="k">신청 마감</span><span>2026년 11월 24일(화)
         <small>절인배추 받을 날짜를 정해서 미리 주문해야 해서요.</small></span></li>
       <li><span class="k">점심</span><span>김장 끝나고 다 같이 비건 전 부치고 비건 라면 끓여 먹어요 🍜
         <small>점심도 100% 비건으로 준비해요.</small>
-        <small>참가비(점심 등) 3,000원에 들어 있어요. 따로 챙겨 오실 건 없어요.</small></span></li>
+        <small>점심값은 기본비 3,000원에 들어 있어요. 따로 챙겨 오실 건 없어요.</small></span></li>
       <li><span class="k">준비물</span><span>앞치마, 고무장갑, 김치통
         <small>가져갈 포기 수에 맞는 크기로요. 1포기에 약 3~4L예요.</small></span></li>
       <li><span class="k">참가비 납부</span><span><span class="acct">토스뱅크 1002-3605-1961 <span class="nowrap">(예금주 이도연)</span></span>
@@ -293,7 +292,7 @@ const RECIPE = [
     <ul class="points">
       <li>포기 수는 절인배추 기준이에요. 10kg 한 박스에 4~6포기가 들어 있어서, 1포기를 약 2kg으로 계산해요. 배추 크기에 따라 조금 다를 수 있어요.</li>
       <li>절인배추를 포함한 모든 재료는 신청한 포기 수에 맞춰서 구매해요.</li>
-      <li>참가비는 1인 3,000원에 1포기당 16,000원을 더한 금액이에요. 절임배추와 양념 재료비, 점심값, 기타 부재료가 모두 포함되어요.</li>
+      <li>참가비 = 기본비 3,000원 + 재료비 16,000원 × 포기 수예요. 기본비는 점심값과 기타 부재료, 재료비는 절임배추와 양념 재료 값이에요.</li>
       <li>김치속은 참가자들이 다 같이 만들어요.</li>
     </ul>
     <a class="btn" id="goApply" href="#apply">참가 신청하러 가기</a>
@@ -367,7 +366,7 @@ const RECIPE = [
       </label>
       <p class="err" id="consentErr" role="alert"></p>
 
-      <div class="fee-live">예상 참가비: <b id="feeLive">0원</b><small style="display:block;font-size:15px;color:var(--muted)">참가비(점심 등) 3,000원 포함</small></div>
+      <div class="fee-live">예상 참가비: <b id="feeLive">0원</b><small style="display:block;font-size:15px;color:var(--muted)">기본비 3,000원 + 재료비 16,000원 × 포기 수</small></div>
 
       <button type="submit" class="btn" id="submitBtn">신청하기</button>
       <p class="form-error hidden" id="formError" role="alert"></p>
@@ -415,18 +414,18 @@ const RECIPE = [
     </div>
 
     <details style="margin-top:16px">
-      <summary><span>산정 근거 (1포기 <span id="perHeadText"></span>원)</span></summary>
+      <summary><span>재료비 산정 근거 (1포기 <span id="perHeadText"></span>원)</span></summary>
       <table>
         <tbody>
           <tr><td>절인배추<small>10kg 1박스(4~6포기) 34,000원 ÷ 5포기 (1포기 ≈ 2kg)</small><span class="plinks">살 곳 <a href="https://www.hwkimchi.com/m/product.html?branduid=26&amp;xcode=003&amp;mcode=000&amp;scode=&amp;type=P&amp;sort=manual&amp;current_category=003&amp;search=&amp;GfDT=bm10W1w%3D" target="_blank" rel="noopener">절임배추 10kg 상품 보기</a></span></td><td class="num">6,800원</td></tr>
           <tr><td>고춧가루 150g<small>국산 1kg 약 30,000원</small><span class="plinks">가격 보기 <a href="https://search.shopping.naver.com/search/all?query=%EA%B5%AD%EC%82%B0%20%EA%B3%A0%EC%B6%A7%EA%B0%80%EB%A3%A8%201kg" target="_blank" rel="noopener">국산 고춧가루</a></span></td><td class="num">4,500원</td></tr>
           <tr><td>무·쪽파·마늘·생강·대파<span class="plinks">가격 보기 <a href="https://search.shopping.naver.com/search/all?query=%EA%B9%80%EC%9E%A5%20%EB%AC%B4" target="_blank" rel="noopener">무</a> <a href="https://search.shopping.naver.com/search/all?query=%EC%AA%BD%ED%8C%8C%201%EB%8B%A8" target="_blank" rel="noopener">쪽파</a> <a href="https://search.shopping.naver.com/search/all?query=%EA%B5%AD%EC%82%B0%20%EA%B9%90%EB%A7%88%EB%8A%98%201kg" target="_blank" rel="noopener">깐마늘</a> <a href="https://search.shopping.naver.com/search/all?query=%EA%B5%AD%EC%82%B0%20%EC%83%9D%EA%B0%95" target="_blank" rel="noopener">생강</a> <a href="https://search.shopping.naver.com/search/all?query=%EB%8C%80%ED%8C%8C%201%EB%8B%A8" target="_blank" rel="noopener">대파</a></span></td><td class="num">3,050원</td></tr>
-          <tr><td>갓·미나리·찹쌀가루<span class="plinks">가격 보기 <a href="https://search.shopping.naver.com/search/all?query=%EA%B9%80%EC%9E%A5%20%EC%B2%AD%EA%B0%93%201%EB%8B%A8" target="_blank" rel="noopener">갓</a> <a href="https://search.shopping.naver.com/search/all?query=%EB%AF%B8%EB%82%98%EB%A6%AC%201%EB%8B%A8" target="_blank" rel="noopener">미나리</a> <a href="https://search.shopping.naver.com/search/all?query=%EA%B5%AD%EC%82%B0%20%EC%B0%B9%EC%8C%80%EA%B0%80%EB%A3%A8" target="_blank" rel="noopener">찹쌀가루</a></span></td><td class="num">850원</td></tr>
+          <tr><td>갓·찹쌀가루<span class="plinks">가격 보기 <a href="https://search.shopping.naver.com/search/all?query=%EA%B9%80%EC%9E%A5%20%EC%B2%AD%EA%B0%93%201%EB%8B%A8" target="_blank" rel="noopener">갓</a> <a href="https://search.shopping.naver.com/search/all?query=%EA%B5%AD%EC%82%B0%20%EC%B0%B9%EC%8C%80%EA%B0%80%EB%A3%A8" target="_blank" rel="noopener">찹쌀가루</a></span></td><td class="num">850원</td></tr>
           <tr><td>비건 감칠맛 재료<small>다시마·표고·국간장·매실청·된장·양파·배</small><span class="plinks">가격 보기 <a href="https://search.shopping.naver.com/search/all?query=%EA%B5%AD%EC%82%B0%20%EB%8B%A4%EC%8B%9C%EB%A7%88" target="_blank" rel="noopener">다시마</a> <a href="https://search.shopping.naver.com/search/all?query=%EA%B5%AD%EC%82%B0%20%EA%B1%B4%ED%91%9C%EA%B3%A0%EB%B2%84%EC%84%AF" target="_blank" rel="noopener">건표고</a> <a href="https://search.shopping.naver.com/search/all?query=%EA%B5%AD%EA%B0%84%EC%9E%A5" target="_blank" rel="noopener">국간장</a> <a href="https://search.shopping.naver.com/search/all?query=%EB%A7%A4%EC%8B%A4%EC%B2%AD" target="_blank" rel="noopener">매실청</a> <a href="https://search.shopping.naver.com/search/all?query=%EB%90%9C%EC%9E%A5" target="_blank" rel="noopener">된장</a> <a href="https://search.shopping.naver.com/search/all?query=%EC%96%91%ED%8C%8C" target="_blank" rel="noopener">양파</a> <a href="https://search.shopping.naver.com/search/all?query=%EC%8B%A0%EA%B3%A0%EB%B0%B0" target="_blank" rel="noopener">배</a></span></td><td class="num">800원</td></tr>
           <tr><td><b>합계</b></td><td class="num"><b>16,000원</b></td></tr>
         </tbody>
       </table>
-      <p style="margin-top:12px">여기에 <b>1인 참가비(점심 등) <span id="baseFeeText"></span>원</b>이 더해져요. 김장 끝나고 다 같이 비건 전 부치고 비건 라면 끓여 먹는 데 써요.</p>
+      <p style="margin-top:12px">여기에 <b>1인 기본비 <span id="baseFeeText"></span>원</b>이 더해져서 참가비가 돼요. 기본비는 점심값과 기타 부재료예요. 김장 끝나고 다 같이 비건 전 부치고 비건 라면 끓여 먹는 데 써요.</p>
       <p class="hint">‘가격 보기’를 누르면 네이버쇼핑에서 그 재료의 지금 온라인 가격을 볼 수 있어요. 채소 평균 시세는 <a href="https://www.kamis.or.kr" target="_blank" rel="noopener">농산물유통정보(KAMIS)</a>에서도 확인할 수 있어요.</p>
       <p class="soft-note">🛒 장은 <b>11월 28일</b>에 봐요. 채소 값은 날마다 조금씩 오르내려서, 지금 보이는 금액과 조금 달라질 수 있어요.</p>
       <p><b>실제 구매가로 정산해서 차액이 생기면 행사 당일 알려드려요.</b></p>
@@ -444,18 +443,18 @@ const RECIPE = [
       <thead><tr><th>재료</th><th class="num">1포기 분량</th></tr></thead>
       <tbody id="recipeBody"></tbody>
     </table>
-    <p class="hint" style="margin-top:8px">다시마 3g + 건표고 1개를 물 250ml에 끓이면 채수 약 200ml가 나와요. 국간장 대신 비건 액젓(콩·해조류로 만든 것)을 써도 좋아요. 미나리는 향이 좋지만 김치가 빨리 무를 수 있어서, 오래 두고 먹을 김치라면 빼도 돼요.</p>
+    <p class="hint" style="margin-top:8px">다시마 3g + 건표고 1개를 물 250ml에 끓이면 채수 약 200ml가 나와요. 국간장 대신 비건 액젓(콩·해조류로 만든 것)을 써도 좋아요.</p>
 
     <h3>만드는 순서 (당일 흐름)</h3>
     <ol class="steps">
       <li><b>채수·찹쌀풀</b> — 도착하면 절인배추부터 채반에 엎어 물기를 빼요. 물에 다시마·건표고를 넣고 끓이다가 끓어오르면 약불로 10분, 다시마를 건지고 10분 더 끓여요. 식힌 채수(1포기당 150ml)에 찹쌀가루를 풀어 약불에서 저어 가며 풀을 쑤고 완전히 식혀요.</li>
-      <li><b>채소 썰기</b> — 무는 채 썰고, 쪽파·갓·미나리는 4cm 길이로, 대파는 어슷하게 썰어요. 마늘·생강·양파·배는 남은 채수와 함께 믹서에 갈아요. 채수에서 건진 표고도 잘게 다져 두었다가 속에 넣으면 감칠맛이 더해져요.</li>
-      <li><b>양념 섞기</b> — 식은 찹쌀풀에 고춧가루를 먼저 풀어 20분쯤 불려요(색이 고와져요). 고춧가루는 8할만 먼저 넣고, 색과 되기를 보면서 나머지를 넣어요. 갈아 둔 재료, 국간장, 매실청, 된장을 넣고 섞은 뒤 무채를 넣어 버무리고, 마지막에 쪽파·갓·미나리·대파를 살살 섞어요. 배춧잎 한 장에 속을 싸서 맛을 보고, 싱거우면 굵은소금으로 간을 맞춰요. 살짝 짭짤해야 익었을 때 간이 맞아요.</li>
+      <li><b>채소 썰기</b> — 무는 채 썰고, 쪽파·갓은 4cm 길이로, 대파는 어슷하게 썰어요. 마늘·생강·양파·배는 남은 채수와 함께 믹서에 갈아요. 채수에서 건진 표고도 잘게 다져 두었다가 속에 넣으면 감칠맛이 더해져요.</li>
+      <li><b>양념 섞기</b> — 식은 찹쌀풀에 고춧가루를 먼저 풀어 20분쯤 불려요(색이 고와져요). 고춧가루는 8할만 먼저 넣고, 색과 되기를 보면서 나머지를 넣어요. 갈아 둔 재료, 국간장, 매실청, 된장을 넣고 섞은 뒤 무채를 넣어 버무리고, 마지막에 쪽파·갓·대파를 살살 섞어요. 배춧잎 한 장에 속을 싸서 맛을 보고, 싱거우면 굵은소금으로 간을 맞춰요. 살짝 짭짤해야 익었을 때 간이 맞아요.</li>
       <li><b>버무리기</b> — 배춧잎을 한 장씩 들춰 줄기 쪽에 속을 넉넉히, 잎 쪽은 살짝만 발라요. 겉잎으로 전체를 감싸 풀리지 않게 해요.</li>
       <li><b>통에 담기</b> — 자른 면이 위로 오게 차곡차곡 담고 꾹꾹 눌러 공기를 빼요. 통의 80%만 채우고 남은 겉잎(우거지)으로 덮어요. 서늘한 곳에 하루쯤 두었다가 냉장고에 넣으면 돼요.</li>
     </ol>
 
-    <div class="vegan-badge">🌱 비건 확인 완료 — 위 재료 17가지는 모두 식물성(채소·과일·곡물·해조류·버섯·콩 발효 양념·소금)이에요. 젓갈·액젓·새우·굴·멸치·가쓰오 육수는 쓰지 않아요.</div>
+    <div class="vegan-badge">🌱 비건 확인 완료 — 위 재료 16가지는 모두 식물성(채소·과일·곡물·해조류·버섯·콩 발효 양념·소금)이에요. 젓갈·액젓·새우·굴·멸치·가쓰오 육수는 쓰지 않아요.</div>
 
   </details>
 
@@ -613,10 +612,10 @@ const RECIPE = [
   /* ---------- ⑤ 계산기 ---------- */
   function renderCalc() {
     var n = toHeads($("calcHeads").value);
-    $("calcFormula").textContent = "참가비(점심 등) " + won(CONFIG.BASE_FEE).replace("원", "") + "원 + " +
-      CONFIG.PER_HEAD.toLocaleString("ko-KR") + "원 × " + n + "포기(약 " + kg(n) + ") =";
+    $("calcFormula").textContent = "기본비 " + won(CONFIG.BASE_FEE).replace("원", "") + "원 + " +
+      "재료비 " + CONFIG.PER_HEAD.toLocaleString("ko-KR") + "원 × " + n + "포기(약 " + kg(n) + ") =";
     $("calcTotal").textContent = "총 " + won(fee(n));
-    $("calcStepNote").textContent = "1포기 늘릴 때마다 " + won(CONFIG.PER_HEAD) + "이 더 붙어요. (" +
+    $("calcStepNote").textContent = "1포기 늘릴 때마다 재료비 " + won(CONFIG.PER_HEAD) + "이 더 붙어요. (" +
       (n + 1) + "포기면 " + won(fee(n + 1)) + ")";
     var rows = [];
     for (var i = 1; i <= 10; i++) {

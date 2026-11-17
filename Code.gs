@@ -10,8 +10,8 @@
  * (index.html 맨 위 CONFIG도 똑같이 바꿔 주세요)
  */
 const CONFIG = {
-  BASE_FEE: 3000,            // 1인 참가비(점심 등)
-  PER_HEAD: 16000,           // 1포기당 참가비 (절인배추 6,800 + 양념 약 9,200)
+  BASE_FEE: 3000,            // 1인 기본비 (점심·기타 부재료)
+  PER_HEAD: 16000,           // 1포기당 재료비 (절인배추 6,800 + 양념 약 9,200)
   HEADS_PER_BOX: 5,          // 절인배추 10kg 1박스 포기 수 (4~6포기의 가운데 값)
   DEADLINE: '2026-11-24',    // 신청 마감일 (이 날 밤 12시까지, 한국 시간)
 
@@ -54,8 +54,8 @@ function setup() {
     ['차액 (참가비 − 재료비 = 점심 등 + 여유분)', '=B6-B5'],
     ['', ''],
     ['▼ 설정값 (Code.gs의 CONFIG에서 고친 뒤 setup을 다시 실행하세요)', ''],
-    ['1인 참가비(점심 등)', CONFIG.BASE_FEE],
-    ['1포기당 참가비', CONFIG.PER_HEAD],
+    ['1인 기본비 (점심·기타 부재료)', CONFIG.BASE_FEE],
+    ['1포기당 재료비', CONFIG.PER_HEAD],
     ['절인배추 1박스 포기 수', CONFIG.HEADS_PER_BOX],
     ['절인배추 1박스 가격', CONFIG.BOX_PRICE],
     ['1포기당 양념 재료비', CONFIG.SEASONING_PER_HEAD],
