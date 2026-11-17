@@ -285,6 +285,7 @@ const RECIPE = [
       <li><span class="k">준비물</span><span>앞치마, 고무장갑, 김치통
         <small>가져갈 포기 수에 맞는 크기로요. 1포기에 약 3~4L예요.</small></span></li>
       <li><span class="k">참가비 납부</span><span><span class="acct">토스뱅크 1002-3605-1961 <span class="nowrap">(예금주 이도연)</span></span>
+        <small>신청하신 뒤 <b>11월 24일(화)까지</b> 보내 주세요.</small>
         <button type="button" class="copy-btn" data-copy="100236051961">계좌번호 복사</button></span></li>
       <li><span class="k">문의</span><span><a href="mailto:a01051998767@gmail.com">a01051998767@gmail.com</a></span></li>
     </ul>
@@ -302,8 +303,8 @@ const RECIPE = [
   <section class="card" id="schedule" aria-labelledby="h-schedule">
     <h2 id="h-schedule">전체 일정</h2>
     <ol class="timeline" id="timeline">
-      <li data-until="2026-11-24"><span class="when">11월 24일(화)까지</span><b>참가 신청</b>
-        <small>이 날 밤까지 신청하고 고칠 수 있어요.</small></li>
+      <li data-until="2026-11-24"><span class="when">11월 24일(화)까지</span><b>참가 신청 · 참가비 납부</b>
+        <small>이 날 밤까지 신청하고 고칠 수 있어요. 참가비도 이 날까지 보내 주세요.</small></li>
       <li data-until="2026-11-27"><span class="when">마감 직후</span><b>절임배추 주문</b>
         <small>신청된 포기 수에 맞춰 박스 수를 정해 주문해요.</small></li>
       <li data-until="2026-11-28"><span class="when">11월 28일(토)</span><b>속재료 장보기</b>
@@ -385,7 +386,7 @@ const RECIPE = [
       <p style="font-size:22px;font-weight:700;margin-bottom:6px" id="doneTitle">신청이 완료됐어요</p>
       <p id="doneDetail"></p>
       <p class="fee" id="doneFee"></p>
-      <div class="pay-box"><b>참가비 보내실 곳</b><br><span class="acct">토스뱅크 1002-3605-1961 <span class="nowrap">(예금주 이도연)</span></span>
+      <div class="pay-box"><b>참가비는 11월 24일(화)까지 보내 주세요</b><br><span class="acct">토스뱅크 1002-3605-1961 <span class="nowrap">(예금주 이도연)</span></span>
         <button type="button" class="copy-btn" data-copy="100236051961">계좌번호 복사</button></div>
       <p class="hint">장은 11월 28일에 봐서 금액이 조금 달라질 수 있어요. 실제 구매가로 정산해서 차액이 생기면 행사 당일 알려드려요.<br>내용을 바꾸고 싶으면 같은 연락처로 다시 신청하면 돼요.</p>
       <button type="button" class="btn ghost" id="doneAgain">신청서 다시 쓰기</button>
@@ -405,7 +406,6 @@ const RECIPE = [
       <span id="calcFormula"></span>
       <b id="calcTotal"></b>
     </div>
-    <p class="hint" id="calcStepNote"></p>
 
     <h3>1~10포기 참가비</h3>
     <div class="fee-table-wrap">
@@ -615,8 +615,6 @@ const RECIPE = [
     $("calcFormula").textContent = "기본비 " + won(CONFIG.BASE_FEE).replace("원", "") + "원 + " +
       "재료비 " + CONFIG.PER_HEAD.toLocaleString("ko-KR") + "원 × " + n + "포기(약 " + kg(n) + ") =";
     $("calcTotal").textContent = "총 " + won(fee(n));
-    $("calcStepNote").textContent = "1포기 늘릴 때마다 재료비 " + won(CONFIG.PER_HEAD) + "이 더 붙어요. (" +
-      (n + 1) + "포기면 " + won(fee(n + 1)) + ")";
     var rows = [];
     for (var i = 1; i <= 10; i++) {
       rows.push("<tr" + (i === n ? " class='me'" : "") + "><td>" + i + "포기<small>약 " + kg(i) + "</small></td><td class='num'>" + won(fee(i)) + "</td></tr>");
