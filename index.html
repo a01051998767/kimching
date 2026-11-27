@@ -220,7 +220,7 @@ const LUNCH_SHOP = [
 
   <section class="card" id="cue" aria-labelledby="h-cue">
     <h2 id="h-cue">김장 당일 임무카드</h2>
-    <p>내 임무카드를 누르면 시간별로 할 일이 나와요.</p>
+    <p>임무카드를 누르면 시간별로 할 일이 나와요.</p>
     <div class="role-chips" id="roleChips" role="group" aria-label="임무카드 고르기"></div>
     <div class="role-card hidden" id="roleCard" aria-live="polite"></div>
     <div id="cueList"></div>
@@ -238,7 +238,7 @@ const LUNCH_SHOP = [
           <tr><td>화장실</td><td>배추 물빼기, 손 씻기</td></tr>
           <tr><td>가위 2개</td><td>쪽파·갓</td></tr>
           <tr><td>감자칼</td><td>무 → 양파·배</td></tr>
-          <tr><td>면기</td><td>재료 담기, 양념 덜기</td></tr>
+          <tr><td>대접</td><td>재료 담기, 양념 덜기</td></tr>
           <tr><td>밥상 ①</td><td>쪽파·갓 다듬기 → 버무리기 → 점심상</td></tr>
           <tr><td>밥상 ②③</td><td>손질·계량 → 버무리기</td></tr>
         </tbody>
@@ -386,9 +386,9 @@ const CUE = [
     { roles: [3], text: "무채 마무리 → 도마 ① 씻어 불 지기에게 → 갓 다듬기 돕기" },
     { roles: [9], text: "무채 마무리 → 도마 ②에서 대파 어슷썰기" },
     { roles: [2], text: "양파 → 배 → 표고 갈기 → 믹서 씻기" },
-    { roles: [4, 5], text: "쪽파·갓 씻기 → 가위로 4cm씩 잘라 면기에 담기" },
+    { roles: [4, 5], text: "쪽파·갓 씻기 → 가위로 4cm씩 잘라 대접에 담기" },
     { roles: [1], text: "부추 씻기 → 도마 ①에서 부추 4~5cm, 당근 채 → 반죽 만들기" },
-    { roles: [6], text: "밥상마다 면기·고무장갑 놓기" },
+    { roles: [6], text: "밥상마다 대접·고무장갑 놓기" },
     { roles: [7], text: "설거지, 대야 아래 비닐 깔기" },
     { roles: [8], text: "통기타 한 곡, 또는 쉬어 가는 노래" }
   ]},
@@ -396,14 +396,14 @@ const CUE = [
     { roles: [4, 5], text: "대야에 간 재료·국간장·매실청·된장 → 무채 → 쪽파·갓·대파 순서로 섞기" },
     { roles: [2, 9], text: "재료 넘겨 주기, 고춧가루는 색 보며 추가" },
     { roles: [6, 3], text: "배추를 밥상 3곳으로 나르기" },
-    { roles: [7], text: "믹서·면기 설거지" },
+    { roles: [7], text: "믹서·대접 설거지" },
     { roles: [1], text: "화구 2개로 부추전 부치기 시작" },
     { roles: [0], text: "11:45 배춧잎에 싸서 맛보고 소금으로 간 맞추기" },
     { roles: [8], text: "신나는 노동요로 바꾸기" }
   ]},
   { t: "11:50", end: "12:35", title: "버무리기·통에 담기", rows: [
     { roles: [2, 3, 4, 5, 6, 7, 8, 9], text: "밥상마다 3명씩 버무리기. 줄기 쪽엔 넉넉히, 잎 쪽엔 살짝" },
-    { roles: [4], text: "대야 양념을 밥상별 면기에 덜어 주기" },
+    { roles: [4], text: "대야 양념을 밥상별 대접에 덜어 주기" },
     { roles: [6], text: "김치통에 포기 수대로 담기, 80%만 채우기" },
     { roles: [1], text: "부추전 계속 부치기 → 12:25까지 마무리" },
     { roles: [2], text: "12:25 빠져서 큰 냄비 2개에 라면 물 받기" },
