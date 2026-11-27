@@ -121,6 +121,20 @@ const LUNCH_SHOP = [
   .cue-row:last-child { border-bottom: 0; }
   .cue-row .r { display: block; font-weight: 700; color: var(--green-dark); font-size: 15px; }
   .cue-empty { color: var(--muted); font-size: 15px; padding: 6px 0; }
+  .grid-wrap { overflow-x: auto; -webkit-overflow-scrolling: touch; border-radius: 10px; border: 1px solid var(--line); }
+  .grid { border-collapse: separate; border-spacing: 0; font-size: 14px; line-height: 1.4; min-width: 820px; }
+  .grid td { min-width: 92px; }
+  .grid th, .grid td { padding: 8px 7px; border-bottom: 1px solid var(--line); vertical-align: top; text-align: left; }
+  .grid thead th { background: var(--green); color: #fff; font-weight: 700; white-space: nowrap; font-size: 13px; }
+  .grid thead th small { display: block; font-weight: 400; opacity: .85; font-size: 12px; }
+  .grid tbody th {
+    position: sticky; left: 0; z-index: 1; background: #fff; white-space: nowrap; font-size: 14px;
+    color: var(--green-dark); cursor: pointer; box-shadow: 1px 0 0 var(--line);
+  }
+  .grid thead th:first-child { position: sticky; left: 0; z-index: 2; }
+  .grid tbody tr:nth-child(even) td, .grid tbody tr:nth-child(even) th { background: #faf6ee; }
+  .grid td.lunch { background: var(--red-soft) !important; }
+  .grid tbody tr.on th, .grid tbody tr.on td { background: var(--green-soft) !important; font-weight: 700; }
   .gear td:first-child { white-space: nowrap; font-weight: 700; color: var(--green-dark); width: 5.5em; }
   .dayflow { margin: 8px 0 0; padding: 12px 12px 12px 34px; background: var(--green-soft); border-radius: 12px; font-size: 17px; }
   .dayflow li { padding: 2px 0; }
@@ -220,6 +234,9 @@ const LUNCH_SHOP = [
 
   <section class="card" id="cue" aria-labelledby="h-cue">
     <h2 id="h-cue">김장 당일 임무카드</h2>
+    <h3 style="margin-top:0">한눈에 보기</h3>
+    <div class="grid-wrap"><table class="grid" id="cueGrid"></table></div>
+    <p class="hint" style="margin:6px 0 16px">옆으로 밀어서 보세요. 이름을 누르면 아래에 그 임무카드가 열려요.</p>
     <p>임무카드를 누르면 시간별로 할 일이 나와요.</p>
     <div class="role-chips" id="roleChips" role="group" aria-label="임무카드 고르기"></div>
     <div class="role-card hidden" id="roleCard" aria-live="polite"></div>
@@ -346,6 +363,18 @@ const LUNCH_SHOP = [
 })();
 </script>
 <script>
+// 한눈에 보기 표: CUE 블록 순서대로 (전날 제외)
+const CUE_GRID = {
+  1: ["재료 확인", "부추 다듬기", "부추전 반죽", "부추전 부치기", "부추전 부치기", "라면", "팬·화구 닦기"],
+  2: ["인사", "마늘·생강 갈기", "양파·배·표고 갈기", "재료 넘기기", "버무리기 → 라면 물", "라면", "설거지"],
+  3: ["인사", "무채", "무채 · 갓 돕기", "배추 나르기", "버무리기", "점심", "설거지"],
+  4: ["풀에 고춧가루", "쪽파·갓 다듬기", "쪽파·갓 자르기", "양념 섞기", "양념 덜기 · 버무리기", "점심", "밥상·바닥"],
+  5: ["풀에 고춧가루", "쪽파·갓 다듬기", "쪽파·갓 자르기", "양념 섞기", "버무리기", "점심", "밥상·바닥"],
+  6: ["배추 물빼기", "비닐·이름표 · 쪽파", "대접·장갑 놓기", "배추 나르기", "통에 담기", "상 차리기", "김치통 나누기"],
+  7: ["인사", "싱크대 순서 · 설거지", "설거지", "설거지", "버무리기 · 설거지", "상 차리기", "설거지"],
+  8: ["노동요 틀기", "계량 · 선곡", "통기타", "노동요", "버무리기 · 폴라로이드", "점심", "단체 사진"],
+  9: ["인사", "무채", "대파", "재료 넘기기", "버무리기", "라면 담기", "쓰레기"]
+};
 // who 에 이름을 넣으면 담당자가 보여요. roles 의 0 = 다 같이
 const CUE_ROLES = [
   { id: 1,  icon: "🔥", name: "불 지기",     who: "", where: "화구 2개, 도마 ①, 밥상 ③", sum: "점심을 맡아요. 부추전을 부치고 라면을 끓여요." },
@@ -434,8 +463,24 @@ const CUE = [
   function label(r) { return r.icon + " " + r.name; }
   function role(id) { return CUE_ROLES.filter(function (x) { return x.id === id; })[0]; }
   function roleName(id) { return id === 0 ? "🙋 다 같이" : label(role(id)); }
+  var grid = document.getElementById("cueGrid");
+  var blocks = CUE.filter(function (b) { return !b.eve; });
+  grid.innerHTML = "<thead><tr><th>임무카드</th>" + blocks.map(function (b) {
+    return "<th>" + b.t + "<small>" + esc(b.title) + "</small></th>";
+  }).join("") + "</tr></thead><tbody>" + CUE_ROLES.filter(function (r) { return CUE_GRID[r.id]; }).map(function (r) {
+    return "<tr data-id='" + r.id + "'><th>" + esc(label(r)) + "</th>" + CUE_GRID[r.id].map(function (t, i) {
+      return "<td" + (blocks[i].title.indexOf("점심") >= 0 ? " class='lunch'" : "") + ">" + esc(t) + "</td>";
+    }).join("") + "</tr>";
+  }).join("") + "</tbody>";
+  grid.addEventListener("click", function (e) {
+    var tr = e.target.closest("tbody tr"); if (!tr) return;
+    current = +tr.dataset.id; render();
+    card.scrollIntoView({ behavior: "smooth", block: "start" });
+  });
+
   var current = 0;
   function render() {
+    Array.prototype.forEach.call(grid.querySelectorAll("tbody tr"), function (tr) { tr.classList.toggle("on", +tr.dataset.id === current); });
     Array.prototype.forEach.call(chips.children, function (b) { b.setAttribute("aria-pressed", String(+b.dataset.id === current)); });
     if (current) {
       var r = role(current);
