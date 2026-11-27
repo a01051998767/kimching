@@ -206,7 +206,7 @@ const LUNCH_SHOP = [
         <small>주차가 어려워서, 버스나 지하철로 오시는 걸 추천드려요.</small></span></li>
       <li><span class="k">점심</span><span>다 같이 비건 전 부치고 비건 라면 끓여 먹어요 🍜</span></li>
       <li><span class="k">준비물</span><span>앞치마, 고무장갑, 김치통
-        <small>1포기에 약 3~4L예요.</small></span></li>
+        <small>1포기당 약 3~4L</small></span></li>
       <li><span class="k">문의</span><span><a href="mailto:a01051998767@gmail.com">a01051998767@gmail.com</a></span></li>
     </ul>
     <div class="vegan-badge">🌱 100% 비건 김치예요. 젓갈·액젓·새우·굴이 들어가지 않아요.</div>
@@ -277,7 +277,6 @@ const LUNCH_SHOP = [
       <li><b>버무리기</b> — 줄기 쪽엔 속을 넉넉히, 잎 쪽엔 살짝 발라 겉잎으로 감싸요.</li>
       <li><b>통에 담기</b> — 자른 면이 위로 오게 꾹꾹 눌러 담고 80%만 채워요. 서늘한 곳에 하루 두었다가 냉장고에 넣어요.</li>
     </ol>
-    <div class="vegan-badge">🌱 위 재료 16가지는 모두 식물성이에요.</div>
 
     <h3>부추전 만드는 방법 (점심, 8장쯤)</h3>
     <table>
@@ -328,7 +327,7 @@ const LUNCH_SHOP = [
   }).join("");
 
   $("shopBox").textContent = "절인배추 " + CONFIG.TOTAL_KG + "kg 주문 완료";
-  $("shopBoxWhy").textContent = CONFIG.BOX_KG + "kg × " + Math.round(CONFIG.TOTAL_KG / CONFIG.BOX_KG) + "상자, 약 " + HEADS + "포기 기준이에요.";
+  $("shopBoxWhy").textContent = CONFIG.BOX_KG + "kg × " + Math.round(CONFIG.TOTAL_KG / CONFIG.BOX_KG) + "상자, 약 " + HEADS + "포기 기준";
   var lastGroup = "";
   var rows = RECIPE.filter(function (r) { return !r.home; }).map(function (r) {
     var need = r.per * HEADS;
