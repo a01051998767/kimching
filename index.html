@@ -3,23 +3,16 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>함께 담그는 비건 행복김치 🥬 참가신청</title>
-<meta name="description" content="2026년 11월 29일(일) 오전 10시, 함께 담그는 비건 행복김치 모임 참가신청">
+<title>함께 담그는 비건 행복김치 🥬</title>
+<meta name="description" content="2026년 11월 29일(일) 오전 10시, 함께 담그는 비건 행복김치 모임 안내와 임무카드">
 <script>
 /* =====================================================================
-   CONFIG — 나중에 고칠 값은 전부 여기 있어요.
-   금액·마감일을 바꾸면 Code.gs 맨 위 CONFIG도 똑같이 바꿔 주세요.
+   CONFIG — 나중에 고칠 값은 여기 있어요.
    ===================================================================== */
 const CONFIG = {
-  // Apps Script 웹앱 URL (README 3단계에서 복사한 주소). 비워 두면 가짜 데이터 모드로 동작해요.
-  APPS_SCRIPT_URL: "https://script.google.com/macros/s/AKfycbziLt18-edF1l5dg_zGFQiMS5I1fAnRz_K4k-ThrJ60BnhzrWjfwecAWUiY5t8l4SMm/exec",
-
-  BASE_FEE: 3000,        // 1인 기본비 — 점심(비건 전·라면)과 기타 부재료
-  PER_HEAD: 16000,       // 1포기당 재료비 (절인배추 6,800 + 양념 약 9,200)
-  HEADS_PER_BOX: 5,      // 절인배추 1박스 포기 수
-  BOX_KG: 10,            // 절인배추 1박스 무게(kg) — 10kg 34,000원짜리로 주문
-  KG_PER_HEAD: 2,        // 절인배추 1포기 무게(kg) — 10kg 1박스(4~6포기) ÷ 5포기
-  DEADLINE: "2026-11-24" // 신청 마감일 (이 날 밤 12시까지 신청 가능, 한국 시간)
+  TOTAL_KG: 40,          // 주문한 절인배추 총무게(kg) — 10kg × 4박스
+  BOX_KG: 10,            // 절인배추 1박스 무게(kg)
+  KG_PER_HEAD: 2         // 절인배추 1포기 무게(kg) — 10kg 1박스(4~6포기) ÷ 5포기
 };
 
 /* 레시피 — 절인배추 1포기 기준.
@@ -77,10 +70,6 @@ const RECIPE = [
   a { color: var(--green-dark); }
   .hidden { display: none !important; }
 
-  .mock-banner {
-    background: #fff3cd; color: #6b4e00; font-size: 15px;
-    padding: 8px 16px; text-align: center; border-bottom: 1px solid #f0dc9a;
-  }
 
   header.hero {
     background: linear-gradient(180deg, var(--green) 0%, #3f9443 100%);
@@ -260,34 +249,22 @@ const RECIPE = [
   .pay-box .copy-btn { margin-left: auto; margin-right: auto; }
   .box-line { background: var(--red-soft); border-radius: 12px; padding: 12px 14px; font-weight: 700; margin-bottom: 8px; }
 
-  .calc-result {
-    background: var(--green-soft); border-radius: 12px; padding: 16px; margin: 16px 0 8px;
-    text-align: center; font-size: 18px;
-  }
-  .calc-result b { display: block; font-size: 30px; color: var(--red); font-variant-numeric: tabular-nums; }
-  .fee-table { font-size: 16px; }
-  .fee-table small { white-space: nowrap; }
-  .fee-table td { padding-left: 2px; padding-right: 2px; }
-  .fee-table tr.me td { background: var(--green-soft); font-weight: 700; }
-  .fee-table-wrap { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap: 0 14px; }
   footer { text-align: center; color: var(--muted); font-size: 15px; margin-top: 28px; }
 </style>
 </head>
 <body>
-
-<div id="mockBanner" class="mock-banner hidden">🧪 미리보기 모드예요 — 가짜 데이터로 동작하고, 실제로 저장되지 않아요.</div>
 
 <header class="hero">
   <h1>함께 담그는 비건 행복김치 🥬</h1>
 </header>
 
 <nav class="quicknav" aria-label="바로가기">
-  <a href="#info">안내</a><a href="#schedule">일정</a><a href="#cue">큐시트</a><a href="#apply">신청</a><a href="#fee">참가비</a><a href="#recipe">레시피</a><a href="#shopDetails">장보기</a>
+  <a href="#info">안내</a><a href="#schedule">일정</a><a href="#cue">임무카드</a><a href="#recipe">레시피</a><a href="#shopDetails">장보기</a>
 </nav>
 
 <main>
 
-  <!-- ① 안내문 -->
+  <!-- 안내 -->
   <section class="card" id="info" aria-labelledby="h-info">
     <h2 id="h-info">모임 안내</h2>
     <ul class="info">
@@ -295,58 +272,43 @@ const RECIPE = [
       <li><span class="k">장소</span><span>서울 관악구 신림로3길 40, 건영3차아파트 7동 904호
         <small><a href="https://map.naver.com/p/search/%EC%84%9C%EC%9A%B8%20%EA%B4%80%EC%95%85%EA%B5%AC%20%EC%8B%A0%EB%A6%BC%EB%A1%9C3%EA%B8%B8%2040" target="_blank" rel="noopener">지도 보기</a></small>
         <small>주차가 어려워서, 버스나 지하철로 오시는 걸 추천드려요.</small></span></li>
-      <li><span class="k">신청 마감</span><span>2026년 11월 24일(화)
-        <small>절인배추 받을 날짜를 정해서 미리 주문해야 해서요.</small></span></li>
       <li><span class="k">점심</span><span>김장 끝나고 다 같이 비건 전 부치고 비건 라면 끓여 먹어요 🍜
-        <small>점심도 100% 비건으로 준비해요.</small>
-        <small>점심값은 기본비 3,000원에 들어 있어요. 따로 챙겨 오실 건 없어요.</small></span></li>
+        <small>점심도 100% 비건으로 준비해요. 따로 챙겨 오실 건 없어요.</small></span></li>
       <li><span class="k">준비물</span><span>앞치마, 고무장갑, 김치통
         <small>가져갈 포기 수에 맞는 크기로요. 1포기에 약 3~4L예요.</small></span></li>
-      <li><span class="k">참가비 납부</span><span><span class="acct">토스뱅크 1002-3605-1961 <span class="nowrap">(예금주 이도연)</span></span>
-        <small>신청하신 뒤 <b>11월 24일(화)까지</b> 보내 주세요.</small>
-        <button type="button" class="copy-btn" data-copy="100236051961">계좌번호 복사</button></span></li>
       <li><span class="k">문의</span><span><a href="mailto:a01051998767@gmail.com">a01051998767@gmail.com</a></span></li>
     </ul>
     <div class="vegan-badge">🌱 100% 비건 김치예요 — 젓갈·액젓·새우·굴이 들어가지 않아요. 점심도 비건으로 준비해요.</div>
     <ul class="points">
-      <li>포기 수는 절인배추 기준이에요. 10kg 한 박스에 4~6포기가 들어 있어서, 1포기를 약 2kg으로 계산해요. 배추 크기에 따라 조금 다를 수 있어요.</li>
-      <li>절인배추를 포함한 모든 재료는 신청한 포기 수에 맞춰서 구매해요.</li>
-      <li>참가비 = 기본비 3,000원 + 재료비 16,000원 × 포기 수예요. 기본비는 점심값과 기타 부재료, 재료비는 절임배추와 양념 재료 값이에요.</li>
-      <li>김치속은 참가자들이 다 같이 만들어요.</li>
+      <li>절인배추 40kg(약 20포기)을 준비했어요. 1포기는 약 2kg이에요.</li>
+      <li>김치속은 참가자들이 다 같이 만들어요. 각자 맡을 일은 아래 임무카드에 있어요.</li>
     </ul>
-    <a class="btn" id="goApply" href="#apply">참가 신청하러 가기</a>
   </section>
 
   <!-- 전체 일정 -->
   <section class="card" id="schedule" aria-labelledby="h-schedule">
     <h2 id="h-schedule">전체 일정</h2>
     <ol class="timeline" id="timeline">
-      <li data-until="2026-11-24"><span class="when">11월 24일(화)까지</span><b>참가 신청 · 참가비 납부</b>
-        <small>이 날 밤까지 신청하고 고칠 수 있어요. 참가비도 이 날까지 보내 주세요.</small></li>
-      <li data-until="2026-11-27"><span class="when">마감 직후</span><b>절임배추 주문</b>
-        <small>신청된 포기 수에 맞춰 박스 수를 정해 주문해요.</small></li>
-      <li data-until="2026-11-28"><span class="when">11월 28일(토)</span><b>속재료 장보기</b>
-        <small>고춧가루·채소 등 필요한 물품과 재료를 구매해요.</small></li>
+      <li data-until="2026-11-28"><span class="when">11월 28일(토)</span><b>장보기 · 채수와 찹쌀풀 미리 만들기</b>
+        <small>속재료를 사고, 저녁에 채수와 찹쌀풀을 만들어 식혀 둬요.</small></li>
       <li data-until="2026-11-29"><span class="when">11월 29일(일) 오전 10시</span><b>김장하는 날 🥬</b>
         <ol class="dayflow">
-          <li>모여서 인사, 앞치마 두르기</li>
-          <li>채수 끓이고 찹쌀풀 쑤기</li>
-          <li>채소 썰기</li>
-          <li>양념 섞기</li>
-          <li>배추 버무리기</li>
-          <li>김치통에 담기</li>
-          <li>비건 전 부치고 비건 라면 끓여 점심</li>
-          <li>정리하고 마무리</li>
+          <li>10:00 모여서 인사, 앞치마 두르기</li>
+          <li>10:15 재료 손질</li>
+          <li>11:30 양념 섞기</li>
+          <li>11:50 배추 버무리고 김치통에 담기</li>
+          <li>12:40 비건 점심</li>
+          <li>13:30 정리하고 14:00 마무리</li>
         </ol>
-        <a href="#cue" class="hint">→ 누가 언제 무엇을 하는지는 큐시트에서 볼 수 있어요</a></li>
+        <a href="#cue" class="hint">→ 누가 언제 무엇을 하는지는 임무카드에서 볼 수 있어요</a></li>
     </ol>
   </section>
 
-  <!-- 당일 큐시트 -->
+  <!-- 임무카드 -->
   <section class="card" id="cue" aria-labelledby="h-cue">
-    <h2 id="h-cue">김장 당일 큐시트</h2>
-    <p>11월 29일(일) 10:00~14:10. 역할을 누르면 그 역할이 할 일만 보여요.</p>
-    <div class="role-chips" id="roleChips" role="group" aria-label="역할 고르기"></div>
+    <h2 id="h-cue">김장 당일 임무카드</h2>
+    <p>내 임무카드를 누르면 시간별로 할 일이 나와요.</p>
+    <div class="role-chips" id="roleChips" role="group" aria-label="임무카드 고르기"></div>
     <div class="role-card hidden" id="roleCard" aria-live="polite"></div>
     <div id="cueList"></div>
 
@@ -354,13 +316,14 @@ const RECIPE = [
       <summary>장비·자리 쓰는 순서</summary>
       <table class="gear">
         <tbody>
-          <tr><td>화구 1</td><td>채수 1솥 → 찹쌀풀 → 전 부치기</td></tr>
-          <tr><td>화구 2</td><td>채수 2솥 → 쉼 → 라면</td></tr>
-          <tr><td>도마</td><td>무채 → 대파 → 점심 재료</td></tr>
+          <tr><td>전날 저녁</td><td>채수·찹쌀풀 미리 만들기 (총괄)</td></tr>
+          <tr><td>화구 2개</td><td>오전엔 비워 둬요 → 12:10 전 부치기 · 12:30 라면</td></tr>
+          <tr><td>도마 ①</td><td>무채 → 점심 재료</td></tr>
+          <tr><td>도마 ②</td><td>무채 → 대파</td></tr>
           <tr><td>믹서</td><td>마늘·생강 → 양파 → 배 → 표고</td></tr>
-          <tr><td>큰 다라이</td><td>양념 섞기 (11:30~12:00) → 설거지</td></tr>
-          <tr><td>싱크대</td><td>무 씻기 → 쪽파·갓 씻기 → 찹쌀풀 식히기 → 설거지</td></tr>
-          <tr><td>화장실</td><td>절임배추 물빼기 (10:00~12:00, 박스째 기울여서), 손 씻기</td></tr>
+          <tr><td>큰 다라이</td><td>10:00 풀+고춧가루 불리기 → 11:30 양념 섞기 → 설거지</td></tr>
+          <tr><td>싱크대</td><td>무 씻기 → 쪽파·갓 씻기 → 설거지</td></tr>
+          <tr><td>화장실</td><td>절임배추 물빼기 (10:00~11:40, 박스째 기울여서), 손 씻기</td></tr>
           <tr><td>가위 2개</td><td>쪽파·갓 자르기 (다듬이 1·2)</td></tr>
           <tr><td>감자칼</td><td>무 껍질 (도마 지기) → 양파·배 껍질 (믹서 지기)</td></tr>
           <tr><td>면기</td><td>손질한 재료 담기 → 밥상별 양념 덜기</td></tr>
@@ -371,115 +334,7 @@ const RECIPE = [
     </details>
   </section>
 
-  <!-- ② 현재 신청 현황 -->
-  <section class="card status" id="status" aria-labelledby="h-status" aria-live="polite">
-    <h2 id="h-status">현재 신청 현황</h2>
-    <p class="big" id="statusBig">불러오는 중이에요…</p>
-    <p class="sub" id="statusSub"></p>
-    <button type="button" class="btn ghost hidden" id="statusRetry" style="margin-top:12px">다시 불러오기</button>
-    <p class="closed-msg hidden" id="closedMsg">신청이 마감되었어요</p>
-  </section>
-
-  <!-- ③ 참가신청서 -->
-  <section class="card" id="apply" aria-labelledby="h-form">
-    <h2 id="h-form">참가신청서</h2>
-
-    <p id="formClosed" class="hidden">신청이 마감되었어요. 궁금한 점은 <a href="mailto:a01051998767@gmail.com">메일</a>로 물어봐 주세요.</p>
-
-    <form id="form" novalidate>
-      <label class="field" for="name">이름 또는 활동명 <span class="req">*</span></label>
-      <input type="text" id="name" maxlength="30" autocomplete="name" aria-describedby="nameErr">
-      <p class="err" id="nameErr" role="alert"></p>
-
-      <label class="field" for="phone">연락처 <span class="req">*</span></label>
-      <input type="tel" id="phone" inputmode="numeric" maxlength="13" placeholder="010-1234-5678" autocomplete="tel" aria-describedby="phoneErr">
-      <p class="err" id="phoneErr" role="alert"></p>
-
-      <label class="field" for="heads">신청 포기 수 <span class="req">*</span></label>
-      <div class="stepper">
-        <button type="button" id="headsMinus" aria-label="한 포기 줄이기">−</button>
-        <input type="number" id="heads" inputmode="numeric" min="1" step="1" value="1" aria-describedby="headsErr">
-        <span class="unit">포기</span>
-        <button type="button" id="headsPlus" aria-label="한 포기 늘리기">+</button>
-      </div>
-      <p class="hint" id="headsKg" style="margin:6px 0 0"></p>
-      <p class="err" id="headsErr" role="alert"></p>
-
-      <label class="field" for="message">하고 싶은 말 <span class="opt">(선택)</span></label>
-      <input type="text" id="message" maxlength="100" placeholder="예: 덜 맵게 하고 싶어요">
-
-      <label class="consent" for="consent">
-        <input type="checkbox" id="consent">
-        <span><b>개인정보 수집에 동의해요 <span class="req">*</span></b>
-          <small>행사 연락 목적으로만 쓰고 행사가 끝나면 파기합니다.</small></span>
-      </label>
-      <p class="err" id="consentErr" role="alert"></p>
-
-      <div class="fee-live">예상 참가비: <b id="feeLive">0원</b><small style="display:block;font-size:15px;color:var(--muted)">기본비 3,000원 + 재료비 16,000원 × 포기 수</small></div>
-
-      <button type="submit" class="btn" id="submitBtn">신청하기</button>
-      <p class="form-error hidden" id="formError" role="alert"></p>
-    </form>
-
-    <div class="notice dup hidden" id="dupBox" role="alertdialog" aria-labelledby="dupTitle">
-      <b id="dupTitle">이 연락처로 이미 신청하신 내역이 있어요.</b>
-      <p style="margin:6px 0 0">지금 입력한 내용으로 고칠까요?</p>
-      <div class="row">
-        <button type="button" class="btn green" id="dupYes">네, 고칠게요</button>
-        <button type="button" class="btn ghost" id="dupNo">아니요</button>
-      </div>
-    </div>
-
-    <div class="notice done hidden" id="doneBox" role="status">
-      <p style="font-size:22px;font-weight:700;margin-bottom:6px" id="doneTitle">신청이 완료됐어요</p>
-      <p id="doneDetail"></p>
-      <p class="fee" id="doneFee"></p>
-      <div class="pay-box"><b>참가비는 11월 24일(화)까지 보내 주세요</b><br><span class="acct">토스뱅크 1002-3605-1961 <span class="nowrap">(예금주 이도연)</span></span>
-        <button type="button" class="copy-btn" data-copy="100236051961">계좌번호 복사</button></div>
-      <p class="hint">내용을 바꾸고 싶으면 같은 연락처로 다시 신청하면 돼요.</p>
-      <button type="button" class="btn ghost" id="doneAgain">신청서 다시 쓰기</button>
-    </div>
-  </section>
-
-  <!-- ④ 참가비 모의계산기 -->
-  <section class="card" id="fee" aria-labelledby="h-calc">
-    <h2 id="h-calc">참가비 모의계산기 <span class="opt">(1포기 ≈ 2kg)</span></h2>
-    <div class="stepper">
-      <button type="button" id="calcMinus" aria-label="한 포기 줄이기">−</button>
-      <input type="number" id="calcHeads" inputmode="numeric" min="1" step="1" value="1" aria-label="포기 수">
-      <span class="unit">포기</span>
-      <button type="button" id="calcPlus" aria-label="한 포기 늘리기">+</button>
-    </div>
-    <div class="calc-result" aria-live="polite">
-      <span id="calcFormula"></span>
-      <b id="calcTotal"></b>
-    </div>
-
-    <h3>1~10포기 참가비</h3>
-    <div class="fee-table-wrap">
-      <table class="fee-table"><tbody id="feeTableA"></tbody></table>
-      <table class="fee-table"><tbody id="feeTableB"></tbody></table>
-    </div>
-
-    <details style="margin-top:16px">
-      <summary><span>재료비 산정 근거 (1포기 <span id="perHeadText"></span>원)</span></summary>
-      <table>
-        <tbody>
-          <tr><td>절인배추<small>10kg 1박스(4~6포기) 34,000원 ÷ 5포기 (1포기 ≈ 2kg)</small><span class="plinks">살 곳 <a href="https://www.hwkimchi.com/m/product.html?branduid=26&amp;xcode=003&amp;mcode=000&amp;scode=&amp;type=P&amp;sort=manual&amp;current_category=003&amp;search=&amp;GfDT=bm10W1w%3D" target="_blank" rel="noopener">절임배추 10kg 상품 보기</a></span></td><td class="num">6,800원</td></tr>
-          <tr><td>고춧가루 150g<small>국산 1kg 약 30,000원</small><span class="plinks">가격 보기 <a href="https://search.shopping.naver.com/search/all?query=%EA%B5%AD%EC%82%B0%20%EA%B3%A0%EC%B6%A7%EA%B0%80%EB%A3%A8%201kg" target="_blank" rel="noopener">국산 고춧가루</a></span></td><td class="num">4,500원</td></tr>
-          <tr><td>무·쪽파·마늘·생강·대파<span class="plinks">가격 보기 <a href="https://search.shopping.naver.com/search/all?query=%EA%B9%80%EC%9E%A5%20%EB%AC%B4" target="_blank" rel="noopener">무</a> <a href="https://search.shopping.naver.com/search/all?query=%EC%AA%BD%ED%8C%8C%201%EB%8B%A8" target="_blank" rel="noopener">쪽파</a> <a href="https://search.shopping.naver.com/search/all?query=%EA%B5%AD%EC%82%B0%20%EA%B9%90%EB%A7%88%EB%8A%98%201kg" target="_blank" rel="noopener">깐마늘</a> <a href="https://search.shopping.naver.com/search/all?query=%EA%B5%AD%EC%82%B0%20%EC%83%9D%EA%B0%95" target="_blank" rel="noopener">생강</a> <a href="https://search.shopping.naver.com/search/all?query=%EB%8C%80%ED%8C%8C%201%EB%8B%A8" target="_blank" rel="noopener">대파</a></span></td><td class="num">3,050원</td></tr>
-          <tr><td>갓·찹쌀가루<span class="plinks">가격 보기 <a href="https://search.shopping.naver.com/search/all?query=%EA%B9%80%EC%9E%A5%20%EC%B2%AD%EA%B0%93%201%EB%8B%A8" target="_blank" rel="noopener">갓</a> <a href="https://search.shopping.naver.com/search/all?query=%EA%B5%AD%EC%82%B0%20%EC%B0%B9%EC%8C%80%EA%B0%80%EB%A3%A8" target="_blank" rel="noopener">찹쌀가루</a></span></td><td class="num">850원</td></tr>
-          <tr><td>비건 감칠맛 재료<small>다시마·표고·국간장·매실청·된장·양파·배</small><span class="plinks">가격 보기 <a href="https://search.shopping.naver.com/search/all?query=%EA%B5%AD%EC%82%B0%20%EB%8B%A4%EC%8B%9C%EB%A7%88" target="_blank" rel="noopener">다시마</a> <a href="https://search.shopping.naver.com/search/all?query=%EA%B5%AD%EC%82%B0%20%EA%B1%B4%ED%91%9C%EA%B3%A0%EB%B2%84%EC%84%AF" target="_blank" rel="noopener">건표고</a> <a href="https://search.shopping.naver.com/search/all?query=%EA%B5%AD%EA%B0%84%EC%9E%A5" target="_blank" rel="noopener">국간장</a> <a href="https://search.shopping.naver.com/search/all?query=%EB%A7%A4%EC%8B%A4%EC%B2%AD" target="_blank" rel="noopener">매실청</a> <a href="https://search.shopping.naver.com/search/all?query=%EB%90%9C%EC%9E%A5" target="_blank" rel="noopener">된장</a> <a href="https://search.shopping.naver.com/search/all?query=%EC%96%91%ED%8C%8C" target="_blank" rel="noopener">양파</a> <a href="https://search.shopping.naver.com/search/all?query=%EC%8B%A0%EA%B3%A0%EB%B0%B0" target="_blank" rel="noopener">배</a></span></td><td class="num">800원</td></tr>
-          <tr><td><b>합계</b></td><td class="num"><b>16,000원</b></td></tr>
-        </tbody>
-      </table>
-      <p style="margin-top:12px">여기에 <b>1인 기본비 <span id="baseFeeText"></span>원</b>이 더해져서 참가비가 돼요. 기본비는 점심값과 기타 부재료예요. 김장 끝나고 다 같이 비건 전 부치고 비건 라면 끓여 먹는 데 써요.</p>
-      <p class="hint">‘가격 보기’를 누르면 네이버쇼핑에서 그 재료의 지금 온라인 가격을 볼 수 있어요. 채소 평균 시세는 <a href="https://www.kamis.or.kr" target="_blank" rel="noopener">농산물유통정보(KAMIS)</a>에서도 확인할 수 있어요.</p>
-      <p class="soft-note">🛒 장은 <b>11월 28일</b>에 봐요. 채소 값은 날마다 조금씩 오르내려서, 지금 보이는 금액과 조금 달라질 수 있어요.</p>
-    </details>
-  </section>
-
-  <!-- ⑤ 레시피 -->
+  <!-- 레시피 -->
   <details class="card" id="recipe">
     <summary>비건 김장김치 레시피</summary>
 
@@ -492,11 +347,11 @@ const RECIPE = [
     </table>
     <p class="hint" style="margin-top:8px">다시마 3g + 건표고 1개를 물 250ml에 끓이면 채수 약 200ml가 나와요. 국간장 대신 비건 액젓(콩·해조류로 만든 것)을 써도 좋아요.</p>
 
-    <h3>만드는 순서 (당일 흐름)</h3>
+    <h3>만드는 순서</h3>
     <ol class="steps">
-      <li><b>채수·찹쌀풀</b> — 도착하면 절인배추부터 채반에 엎어 물기를 빼요. 물에 다시마·건표고를 넣고 끓이다가 끓어오르면 약불로 10분, 다시마를 건지고 10분 더 끓여요. 식힌 채수(1포기당 150ml)에 찹쌀가루를 풀어 약불에서 저어 가며 풀을 쑤고 완전히 식혀요.</li>
+      <li><b>채수·찹쌀풀 (전날 저녁)</b> — 물에 다시마·건표고를 넣고 끓이다가 끓어오르면 약불로 10분, 다시마를 건지고 10분 더 끓여요. 식힌 채수(1포기당 150ml)에 찹쌀가루를 풀어 약불에서 저어 가며 풀을 쑤고, 완전히 식혀 뚜껑을 덮어 냉장고나 찬 베란다에 둬요. 다음 날 풀이 되직해졌으면 남은 채수를 조금 넣어 풀어 주세요.</li>
       <li><b>채소 썰기</b> — 무는 채 썰고, 쪽파·갓은 4cm 길이로, 대파는 어슷하게 썰어요. 마늘·생강·양파·배는 남은 채수와 함께 믹서에 갈아요. 채수에서 건진 표고도 잘게 다져 두었다가 속에 넣으면 감칠맛이 더해져요.</li>
-      <li><b>양념 섞기</b> — 식은 찹쌀풀에 고춧가루를 먼저 풀어 20분쯤 불려요(색이 고와져요). 고춧가루는 8할만 먼저 넣고, 색과 되기를 보면서 나머지를 넣어요. 갈아 둔 재료, 국간장, 매실청, 된장을 넣고 섞은 뒤 무채를 넣어 버무리고, 마지막에 쪽파·갓·대파를 살살 섞어요. 배춧잎 한 장에 속을 싸서 맛을 보고, 싱거우면 굵은소금으로 간을 맞춰요. 살짝 짭짤해야 익었을 때 간이 맞아요.</li>
+      <li><b>양념 섞기</b> — 찹쌀풀에 고춧가루를 먼저 풀어 20분 이상 불려요(색이 고와져요). 당일 아침 도착하자마자 불려 두면 좋아요. 고춧가루는 8할만 먼저 넣고, 색과 되기를 보면서 나머지를 넣어요. 갈아 둔 재료, 국간장, 매실청, 된장을 넣고 섞은 뒤 무채를 넣어 버무리고, 마지막에 쪽파·갓·대파를 살살 섞어요. 배춧잎 한 장에 속을 싸서 맛을 보고, 싱거우면 굵은소금으로 간을 맞춰요. 살짝 짭짤해야 익었을 때 간이 맞아요.</li>
       <li><b>버무리기</b> — 배춧잎을 한 장씩 들춰 줄기 쪽에 속을 넉넉히, 잎 쪽은 살짝만 발라요. 겉잎으로 전체를 감싸 풀리지 않게 해요.</li>
       <li><b>통에 담기</b> — 자른 면이 위로 오게 차곡차곡 담고 꾹꾹 눌러 공기를 빼요. 통의 80%만 채우고 남은 겉잎(우거지)으로 덮어요. 서늘한 곳에 하루쯤 두었다가 냉장고에 넣으면 돼요.</li>
     </ol>
@@ -505,7 +360,7 @@ const RECIPE = [
 
   </details>
 
-  <!-- ⑥ 속재료 장보기 목록 (신청된 총 포기 수 기준) -->
+  <!-- 속재료 장보기 목록 -->
   <details class="card" id="shopDetails" open>
     <summary>속재료 장보기 목록</summary>
     <p id="shopIntro"></p>
@@ -514,7 +369,7 @@ const RECIPE = [
       <thead><tr><th>재료</th><th class="num">필요한 양</th><th class="num">살 양</th></tr></thead>
       <tbody id="shopBody"></tbody>
     </table>
-    <p class="hint" style="margin-top:8px">‘필요한 양’은 1포기 분량 × 신청된 포기 수, ‘살 양’은 온라인에서 파는 단위로 올림한 값이에요. 신청이 들어올 때마다 자동으로 바뀌어요.</p>
+    <p class="hint" style="margin-top:8px">‘필요한 양’은 1포기 분량 × 20포기, ‘살 양’은 파는 단위로 올림한 값이에요. 된장·굵은소금은 집에 있으면 따로 안 사도 돼요.</p>
   </details>
 
   <footer>함께 담그는 비건 행복김치 · 문의 <a href="mailto:a01051998767@gmail.com">a01051998767@gmail.com</a></footer>
@@ -525,24 +380,8 @@ const RECIPE = [
   "use strict";
   var $ = function (id) { return document.getElementById(id); };
   var params = new URLSearchParams(location.search);
-  var MOCK = !CONFIG.APPS_SCRIPT_URL || params.get("mock") === "1";
+  var HEADS = Math.round(CONFIG.TOTAL_KG / CONFIG.KG_PER_HEAD);
 
-  /* ---------- 공통 계산 ---------- */
-  function won(n) { return Number(n).toLocaleString("ko-KR") + "원"; }
-  function fee(heads) { return CONFIG.BASE_FEE + CONFIG.PER_HEAD * heads; }
-  function boxes(heads) { return Math.ceil(heads / CONFIG.HEADS_PER_BOX); }
-  function kg(heads) { return (Math.round(heads * CONFIG.KG_PER_HEAD * 10) / 10) + "kg"; }
-  function toHeads(v) {
-    var n = parseInt(String(v).replace(/[^\d]/g, ""), 10);
-    return isNaN(n) || n < 1 ? 1 : n;
-  }
-  // 마감: DEADLINE 당일 밤 12시(한국 시간)까지 신청 가능.
-  // 주소 뒤에 ?today=2026-11-25 를 붙이면 그 날짜인 것처럼 미리 볼 수 있어요.
-  function isClosed() {
-    var now = params.get("today") ? new Date(params.get("today") + "T12:00:00+09:00") : new Date();
-    var end = new Date(CONFIG.DEADLINE + "T23:59:59+09:00");
-    return now.getTime() > end.getTime();
-  }
   function fmtQty(v, unit) {
     v = Math.round(v * 100) / 100;
     if (unit === "g" && v >= 1000) return (v / 1000) + "kg";
@@ -550,356 +389,118 @@ const RECIPE = [
     return v + unit;
   }
 
-  /* ---------- 서버 통신 (또는 가짜 데이터) ---------- */
-  var MOCK_KEY = "kimjang-mock-v1";
-  function mockLoad() {
-    try {
-      var saved = JSON.parse(localStorage.getItem(MOCK_KEY));
-      if (Array.isArray(saved)) return saved;
-    } catch (e) {}
-    return [
-      { phone: "01000000001", heads: 5 }, { phone: "01000000002", heads: 2 },
-      { phone: "01000000003", heads: 3 }, { phone: "01000000004", heads: 1 },
-      { phone: "01000000005", heads: 4 }, { phone: "01000000006", heads: 6 }
-    ];
-  }
-  function mockSave(rows) { try { localStorage.setItem(MOCK_KEY, JSON.stringify(rows)); } catch (e) {} }
-  function mockSummary(rows) {
-    return { count: rows.length, heads: rows.reduce(function (s, r) { return s + r.heads; }, 0) };
-  }
-  function delay(ms, value) { return new Promise(function (res) { setTimeout(function () { res(value); }, ms); }); }
-
-  var api = MOCK ? {
-    summary: function () { return delay(400, Object.assign({ ok: true }, mockSummary(mockLoad()))); },
-    submit: function (p) {
-      var rows = mockLoad(), digits = p.phone.replace(/\D/g, "");
-      if (isClosed()) return delay(700, { ok: false, status: "closed" });
-      var found = rows.filter(function (r) { return r.phone === digits; })[0];
-      if (found && !p.update) return delay(700, { ok: false, status: "duplicate" });
-      if (found) found.heads = p.heads; else rows.push({ phone: digits, heads: p.heads });
-      mockSave(rows);
-      return delay(700, Object.assign({ ok: true, status: found ? "updated" : "created" }, mockSummary(rows)));
-    }
-  } : {
-    summary: function () {
-      return fetch(CONFIG.APPS_SCRIPT_URL + "?action=summary&t=" + Date.now())
-        .then(function (r) { return r.json(); });
-    },
-    submit: function (p) {
-      // text/plain으로 보내야 Apps Script에서 CORS 사전 요청 없이 받아요.
-      return fetch(CONFIG.APPS_SCRIPT_URL, {
-        method: "POST",
-        headers: { "Content-Type": "text/plain;charset=utf-8" },
-        body: JSON.stringify(Object.assign({ action: "submit" }, p))
-      }).then(function (r) { return r.json(); });
-    }
-  };
-
-  /* ---------- ② 현황 ---------- */
-  var totalHeads = 0;
-  function renderStatus(s) {
-    totalHeads = s.heads;
-    $("statusBig").innerHTML = "현재 <b>" + s.count + "</b>명이<br>총 <b>" + s.heads + "</b>포기를 신청했어요";
-    $("statusSub").textContent = "약 " + kg(s.heads) + " · 절인배추 약 " + boxes(s.heads) + "박스(" + CONFIG.BOX_KG + "kg) 주문 예정";
-    $("statusRetry").classList.add("hidden");
-    renderShopping();
-  }
-  function loadStatus() {
-    return api.summary().then(function (s) {
-      if (!s || s.ok === false || typeof s.heads !== "number") throw new Error("bad response");
-      renderStatus(s);
-    }).catch(function () {
-      $("statusBig").textContent = "현황을 불러오지 못했어요";
-      $("statusSub").textContent = "잠시 뒤에 다시 눌러 주세요.";
-      $("statusRetry").classList.remove("hidden");
-    });
-  }
-  $("statusRetry").addEventListener("click", function () {
-    $("statusBig").textContent = "불러오는 중이에요…";
-    $("statusSub").textContent = "";
-    loadStatus();
-  });
-
-  function applyClosed() {
-    $("goApply").classList.add("hidden");
-    $("closedMsg").classList.remove("hidden");
-    $("form").classList.add("hidden");
-    $("dupBox").classList.add("hidden");
-    $("formClosed").classList.remove("hidden");
-  }
-
-  /* ---------- ④ 레시피·장보기 ---------- */
+  /* ---------- 레시피·장보기 ---------- */
   $("recipeBody").innerHTML = RECIPE.map(function (r) {
     return "<tr><td>" + r.name + "</td><td class='num'>" + r.label + "</td></tr>";
   }).join("");
 
-  function renderShopping() {
-    var n = totalHeads;
-    $("shopIntro").textContent = n > 0
-      ? "지금까지 신청된 총 " + n + "포기(약 " + kg(n) + ")를 담그려면 이만큼 사야 해요."
-      : "아직 신청이 없어요. 신청이 들어오면 자동으로 계산돼요.";
-    var b = boxes(n), spare = b * CONFIG.HEADS_PER_BOX - n;
-    $("shopBox").textContent = "절인배추 " + CONFIG.BOX_KG + "kg짜리 " + b + "박스 주문";
-    $("shopBoxWhy").textContent = n > 0
-      ? "1박스에 약 " + CONFIG.HEADS_PER_BOX + "포기 → 신청 " + n + "포기를 채우려면 " + b + "박스가 필요해요." +
-        (spare > 0 ? " (" + spare + "포기 남아요)" : " (딱 맞아요)")
-      : "1박스에 약 " + CONFIG.HEADS_PER_BOX + "포기가 들어 있어요. 신청이 들어오면 박스 수가 계산돼요.";
-    var order = ["채소·과일", "양념·가루", "채수 재료"], lastGroup = "";
-    var list = RECIPE.slice().sort(function (a, b) { return order.indexOf(a.group) - order.indexOf(b.group); });
-    $("shopBody").innerHTML = list.map(function (r) {
-      var need = r.per * n;
-      var buy = Math.ceil(Math.round(need / r.pack * 1e6) / 1e6) * r.pack;
-      var head = r.group !== lastGroup ? "<tr class='grp'><td colspan='3'>" + r.group + "</td></tr>" : "";
-      lastGroup = r.group;
-      return head + "<tr><td>" + r.name + "</td><td class='num'>" + fmtQty(need, r.unit) +
-        "</td><td class='num'><b>" + fmtQty(buy, r.unit) + "</b></td></tr>";
-    }).join("");
-  }
-
-  /* ---------- ⑤ 계산기 ---------- */
-  function renderCalc() {
-    var n = toHeads($("calcHeads").value);
-    $("calcFormula").textContent = "기본비 " + won(CONFIG.BASE_FEE).replace("원", "") + "원 + " +
-      "재료비 " + CONFIG.PER_HEAD.toLocaleString("ko-KR") + "원 × " + n + "포기(약 " + kg(n) + ") =";
-    $("calcTotal").textContent = "총 " + won(fee(n));
-    var rows = [];
-    for (var i = 1; i <= 10; i++) {
-      rows.push("<tr" + (i === n ? " class='me'" : "") + "><td>" + i + "포기<small>약 " + kg(i) + "</small></td><td class='num'>" + won(fee(i)) + "</td></tr>");
-    }
-    $("feeTableA").innerHTML = rows.slice(0, 5).join("");
-    $("feeTableB").innerHTML = rows.slice(5).join("");
-  }
-  $("perHeadText").textContent = CONFIG.PER_HEAD.toLocaleString("ko-KR");
-  $("baseFeeText").textContent = CONFIG.BASE_FEE.toLocaleString("ko-KR");
-
-  /* ---------- 포기 수 입력 (+/− 버튼) ---------- */
-  function bindStepper(input, minus, plus, onChange) {
-    function set(n) { input.value = n; onChange(n); }
-    minus.addEventListener("click", function () { set(Math.max(1, toHeads(input.value) - 1)); });
-    plus.addEventListener("click", function () { set(toHeads(input.value) + 1); });
-    input.addEventListener("input", function () { if (input.value !== "") onChange(toHeads(input.value)); });
-    input.addEventListener("blur", function () { set(toHeads(input.value)); });
-  }
-  function renderFeeLive() {
-    var n = toHeads($("heads").value);
-    $("feeLive").textContent = won(fee(n));
-    $("headsKg").textContent = "절인배추 약 " + kg(n) + " (1포기 ≈ " + kg(1) + ")";
-  }
-  // 신청서 포기 수 → 계산기에 자동 반영
-  bindStepper($("heads"), $("headsMinus"), $("headsPlus"), function (n) {
-    renderFeeLive();
-    $("calcHeads").value = n;
-    renderCalc();
-  });
-  bindStepper($("calcHeads"), $("calcMinus"), $("calcPlus"), renderCalc);
-
-  /* ---------- ③ 신청서 ---------- */
-  var PHONE_RE = /^01[016789]-\d{3,4}-\d{4}$/;
-  function formatPhone(v) {
-    var d = v.replace(/\D/g, "").slice(0, 11);
-    if (d.length < 4) return d;
-    if (d.length < 8) return d.slice(0, 3) + "-" + d.slice(3);
-    if (d.length === 10) return d.slice(0, 3) + "-" + d.slice(3, 6) + "-" + d.slice(6);
-    return d.slice(0, 3) + "-" + d.slice(3, 7) + "-" + d.slice(7);
-  }
-  $("phone").addEventListener("input", function () { this.value = formatPhone(this.value); });
-
-  function setErr(inputId, errId, msg) {
-    $(errId).textContent = msg || "";
-    if ($(inputId)) $(inputId).classList.toggle("invalid", !!msg);
-    return !msg;
-  }
-  function validate() {
-    var name = $("name").value.trim(), phone = $("phone").value.trim(), raw = $("heads").value.trim();
-    var ok = [
-      setErr("name", "nameErr", name ? "" : "이름이나 활동명을 적어 주세요."),
-      setErr("phone", "phoneErr", PHONE_RE.test(phone) ? "" : "휴대폰 번호를 확인해 주세요. (예: 010-1234-5678)"),
-      setErr("heads", "headsErr", /^\d+$/.test(raw) && parseInt(raw, 10) >= 1 ? "" : "1포기 이상, 숫자로 적어 주세요."),
-      setErr(null, "consentErr", $("consent").checked ? "" : "개인정보 수집에 동의해 주셔야 신청할 수 있어요.")
-    ];
-    if (ok.indexOf(false) >= 0) {
-      var first = ["name", "phone", "heads", "consent"][ok.indexOf(false)];
-      $(first).focus();
-      return null;
-    }
-    return { name: name, phone: phone, heads: parseInt(raw, 10), message: $("message").value.trim() };
-  }
-
-  var submitting = false;   // 중복 제출 방지
-  var pending = null;       // 중복 연락처 확인을 기다리는 신청 내용
-  function setLoading(on) {
-    submitting = on;
-    $("submitBtn").disabled = on;
-    $("dupYes").disabled = on;
-    $("dupNo").disabled = on;
-    $("submitBtn").innerHTML = on ? "<span class='spinner'></span>보내는 중이에요…" : "신청하기";
-  }
-  function showFormError(msg) {
-    $("formError").textContent = msg;
-    $("formError").classList.toggle("hidden", !msg);
-  }
-  function send(payload, update) {
-    if (submitting) return;
-    setLoading(true);
-    showFormError("");
-    payload.update = !!update;
-    api.submit(payload).then(function (res) {
-      setLoading(false);
-      if (res && res.ok) {
-        pending = null;
-        $("dupBox").classList.add("hidden");
-        $("form").classList.add("hidden");
-        $("doneTitle").textContent = res.status === "updated" ? "신청 내용을 고쳤어요" : "신청이 완료됐어요";
-        $("doneDetail").textContent = payload.name + " 님, " + payload.heads + "포기(약 " + kg(payload.heads) + ")로 접수했어요. 11월 29일에 봬요.";
-        $("doneFee").textContent = "예상 참가비 " + won(fee(payload.heads));
-        $("doneBox").classList.remove("hidden");
-        $("doneBox").scrollIntoView({ block: "center" });
-        if (typeof res.heads === "number") renderStatus(res);
-        loadStatus(); // 시트에서 다시 불러오기
-      } else if (res && res.status === "duplicate") {
-        pending = payload;
-        $("dupBox").classList.remove("hidden");
-        $("dupYes").focus();
-      } else if (res && res.status === "closed") {
-        applyClosed();
-      } else {
-        showFormError((res && res.message) || "저장하지 못했어요. 잠시 뒤에 다시 시도해 주세요.");
-      }
-    }).catch(function () {
-      setLoading(false);
-      showFormError("연결이 잘 안 돼요. 인터넷을 확인하고 다시 눌러 주세요.");
-    });
-  }
-  $("form").addEventListener("submit", function (e) {
-    e.preventDefault();
-    if (submitting) return;
-    if (isClosed()) { applyClosed(); return; }
-    $("dupBox").classList.add("hidden");
-    var payload = validate();
-    if (payload) send(payload, false);
-  });
-  $("dupYes").addEventListener("click", function () { if (pending) send(pending, true); });
-  $("dupNo").addEventListener("click", function () {
-    pending = null;
-    $("dupBox").classList.add("hidden");
-  });
-  $("doneAgain").addEventListener("click", function () {
-    $("doneBox").classList.add("hidden");
-    if (isClosed()) { applyClosed(); return; }
-    $("form").classList.remove("hidden");
-    $("name").focus();
-  });
-
-  /* ---------- 계좌번호 복사 ---------- */
-  Array.prototype.forEach.call(document.querySelectorAll(".copy-btn"), function (btn) {
-    btn.addEventListener("click", function () {
-      var text = btn.getAttribute("data-copy");
-      function done(ok) {
-        btn.textContent = ok ? "복사했어요" : "복사가 안 돼요. 번호를 길게 눌러 주세요";
-        setTimeout(function () { btn.textContent = "계좌번호 복사"; }, 2500);
-      }
-      if (navigator.clipboard && navigator.clipboard.writeText) {
-        navigator.clipboard.writeText(text).then(function () { done(true); }, function () { done(false); });
-      } else { done(false); }
-    });
-  });
+  $("shopIntro").textContent = "절인배추 " + CONFIG.TOTAL_KG + "kg(약 " + HEADS + "포기)에 맞춘 양이에요.";
+  $("shopBox").textContent = "절인배추 " + CONFIG.TOTAL_KG + "kg 주문 완료";
+  $("shopBoxWhy").textContent = CONFIG.BOX_KG + "kg × " + Math.round(CONFIG.TOTAL_KG / CONFIG.BOX_KG) + "박스 · 1포기 약 " +
+    CONFIG.KG_PER_HEAD + "kg로 보면 약 " + HEADS + "포기예요.";
+  var order = ["채소·과일", "양념·가루", "채수 재료"], lastGroup = "";
+  var list = RECIPE.slice().sort(function (a, b) { return order.indexOf(a.group) - order.indexOf(b.group); });
+  $("shopBody").innerHTML = list.map(function (r) {
+    var need = r.per * HEADS;
+    var buy = Math.ceil(Math.round(need / r.pack * 1e6) / 1e6) * r.pack;
+    var head = r.group !== lastGroup ? "<tr class='grp'><td colspan='3'>" + r.group + "</td></tr>" : "";
+    lastGroup = r.group;
+    return head + "<tr><td>" + r.name + "</td><td class='num'>" + fmtQty(need, r.unit) +
+      "</td><td class='num'><b>" + fmtQty(buy, r.unit) + "</b></td></tr>";
+  }).join("");
 
   /* ---------- 전체 일정: 지난 단계·지금 단계 표시 ---------- */
-  (function () {
-    var now = params.get("today") ? new Date(params.get("today") + "T12:00:00+09:00") : new Date();
-    var found = false;
-    Array.prototype.forEach.call(document.querySelectorAll("#timeline > li"), function (li) {
-      var end = new Date(li.getAttribute("data-until") + "T23:59:59+09:00");
-      if (now > end) { li.classList.add("past"); return; }
-      if (!found) {
-        found = true;
-        li.classList.add("now");
-        li.querySelector("b").insertAdjacentHTML("beforeend", "<span class='tag-now'>지금</span>");
-      }
-    });
-  })();
-
-  /* ---------- 시작 ---------- */
-  if (MOCK) $("mockBanner").classList.remove("hidden");
-  renderFeeLive();
-  renderCalc();
-  renderShopping();
-  if (isClosed()) applyClosed();
-  loadStatus();
+  var now = params.get("today") ? new Date(params.get("today") + "T12:00:00+09:00") : new Date();
+  var found = false;
+  Array.prototype.forEach.call(document.querySelectorAll("#timeline > li"), function (li) {
+    var end = new Date(li.getAttribute("data-until") + "T23:59:59+09:00");
+    if (now > end) { li.classList.add("past"); return; }
+    if (!found) {
+      found = true;
+      li.classList.add("now");
+      li.querySelector("b").insertAdjacentHTML("beforeend", "<span class='tag-now'>지금</span>");
+    }
+  });
 })();
 </script>
 <script>
 /* =====================================================================
-   당일 큐시트 — 역할 이름(who)을 채우면 화면에 담당자가 나와요.
+   김장 당일 임무카드 — who 에 이름을 넣으면 화면에 담당자가 나와요.
    ===================================================================== */
 const CUE_ROLES = [
-  { id: 1, icon: "🔥", name: "불 지기",     who: "", where: "화구 2개",          sum: "채수와 찹쌀풀을 끓이고, 점심엔 전을 부쳐요." },
-  { id: 2, icon: "🌀", name: "믹서 지기",   who: "", where: "믹서, 밥상 ②",      sum: "마늘·생강·양파·배·표고를 갈고, 점심엔 라면을 끓여요." },
-  { id: 3, icon: "🔪", name: "도마 지기",   who: "", where: "도마",              sum: "무채를 썰고 대파를 썰어요. 도마는 하나라 이 분만 써요." },
-  { id: 4, icon: "🌿", name: "다듬이 1",    who: "", where: "밥상 ①, 다라이",    sum: "쪽파·갓을 다듬어 자르고, 다라이에서 양념을 섞어요." },
-  { id: 5, icon: "🌿", name: "다듬이 2",    who: "", where: "밥상 ①, 다라이",    sum: "다듬이 1과 같이 일해요. 양념 섞기는 팔힘이 필요해요." },
-  { id: 6, icon: "🥬", name: "배추 지기",   who: "", where: "화장실, 밥상 ②③",   sum: "절임배추 물을 빼고, 김치통 나누기를 챙겨요." },
-  { id: 7, icon: "🚰", name: "싱크대 지기", who: "", where: "싱크대",            sum: "싱크대 쓰는 순서를 정하고, 쓴 도구를 바로 씻어요." },
-  { id: 8, icon: "🎸", name: "흥 지기",     who: "", where: "어디든",            sum: "노동요와 통기타, 사진 기록을 맡아요. 바쁠 땐 손도 보태요." },
-  { id: 9, icon: "🙌", name: "깍두기",      who: "", where: "어디든",            sum: "일이 몰리는 곳을 도와요. 계량과 쓰레기 정리도 맡아요." }
+  { id: 1, icon: "🔥", name: "불 지기",     who: "", where: "다라이, 도마 ①, 화구 2개", sum: "아침에 풀과 고춧가루를 불려 두고, 점심엔 비건 전을 부쳐요." },
+  { id: 2, icon: "🌀", name: "믹서 지기",   who: "", where: "믹서, 밥상 ②",            sum: "마늘·생강·양파·배·표고를 갈고, 점심엔 비건 라면을 끓여요." },
+  { id: 3, icon: "🔪", name: "도마 지기",   who: "", where: "도마 ①",                  sum: "무 껍질을 벗기고 무채를 썰어요." },
+  { id: 4, icon: "🌿", name: "다듬이 1",    who: "", where: "밥상 ①, 다라이",          sum: "쪽파·갓을 다듬어 자르고, 다라이에서 양념을 섞어요." },
+  { id: 5, icon: "🌿", name: "다듬이 2",    who: "", where: "밥상 ①, 다라이",          sum: "다듬이 1과 같이 일해요. 양념 섞기는 팔힘이 필요해요." },
+  { id: 6, icon: "🥬", name: "배추 지기",   who: "", where: "화장실, 밥상 ②③",         sum: "절임배추 물을 빼고, 김치통 나누기를 챙겨요." },
+  { id: 7, icon: "🚰", name: "싱크대 지기", who: "", where: "싱크대",                  sum: "싱크대 쓰는 순서를 정하고, 쓴 도구를 바로 씻어요." },
+  { id: 8, icon: "🎸", name: "흥 지기",     who: "", where: "어디든",                  sum: "노동요와 통기타, 사진 기록, 양념 계량을 맡아요." },
+  { id: 9, icon: "🙌", name: "깍두기",      who: "", where: "도마 ②, 어디든",          sum: "무채와 대파를 썰고, 일이 몰리는 곳을 도와요." },
+  { id: 10, icon: "🌙", name: "전날 준비",  who: "총괄", where: "부엌 (11월 28일 저녁)", sum: "채수와 찹쌀풀을 미리 만들어 두면 당일 아침 40분이 줄어요." }
 ];
-// roles: 이 줄을 할 역할 번호들 (0 = 다 같이)
+// roles: 이 줄을 할 임무카드 번호들 (0 = 다 같이)
 const CUE = [
+  { t: "11월 28일(토) 저녁", end: "", title: "전날 준비", eve: true, rows: [
+    { roles: [10], text: "물 5L에 다시마 60g·건표고 20개를 넣고 끓이기 → 끓어오르면 약불 10분 → 다시마 건지고 10분 더 → 걸러서 채수 약 4L" },
+    { roles: [10], text: "채수 3L에 찹쌀가루 300g을 풀어 약불에서 저으며 10분쯤 풀 쑤기 → 완전히 식혀 뚜껑 덮어 냉장고나 찬 베란다에" },
+    { roles: [10], text: "남은 채수 1L는 병에 담아 냉장(믹서용, 풀 풀기용). 건진 표고는 꼭 짜서 냉장" }
+  ]},
   { t: "10:00", end: "10:15", title: "모이기", rows: [
-    { roles: [0], text: "인사하고 손 씻기, 앞치마·고무장갑 챙기기, 역할 확인" },
-    { roles: [6], text: "도착하자마자 절임배추 박스를 열고, 배추를 자른 면이 아래로 가게 엎은 뒤 박스째 화장실 바닥에 기울여 물빼기 시작. 박스 속 비닐은 아래 모서리에 구멍 몇 개" },
-    { roles: [1], text: "두 화구에 물 2.5L씩 올리고 다시마·건표고 넣기" },
+    { roles: [0], text: "인사하고 손 씻기, 앞치마·고무장갑 챙기기, 내 임무카드 확인" },
+    { roles: [6], text: "도착하자마자 절임배추 박스를 열고, 배추를 자른 면이 아래로 가게 엎은 뒤 박스째 화장실 바닥에 기울여 물빼기. 박스 속 비닐은 아래 모서리에 구멍 몇 개" },
+    { roles: [1], text: "다라이에 찹쌀풀을 붓고 고춧가루 8할(약 2.4kg)을 넣어 고루 섞어 불리기. 풀이 되직하면 채수를 조금씩 넣어 풀기" },
     { roles: [8], text: "여는 노래 한 곡, 사진 찍어도 되는지 먼저 묻기" }
   ]},
   { t: "10:15", end: "11:00", title: "재료 손질", rows: [
-    { roles: [1], text: "끓어오르면 약불 10분 → 다시마 건지고 10분 더 → 체에 걸러 채수 완성. 건진 표고는 믹서 지기에게" },
-    { roles: [2], text: "감자칼로 양파·배 껍질 벗겨 큼직하게 썰기(쟁반 위) → 마늘·생강부터 차례로 갈기. 국간장·매실청을 조금 넣으면 잘 갈려요" },
-    { roles: [3], text: "싱크대 첫 순서로 무 씻기 → 감자칼로 껍질 벗기기 → 칼로 채 썰기(얇게 둥글게 썬 뒤 4~5장씩 겹쳐서 가늘게)" },
+    { roles: [3], text: "싱크대 첫 순서로 무 씻기 → 감자칼로 껍질 벗기기 → 도마 ①에서 무 3개 채 썰기(얇게 둥글게 썬 뒤 4~5장씩 겹쳐서 가늘게)" },
+    { roles: [9], text: "도마 ②에서 무 2개 채 썰기(도마 지기가 껍질 벗긴 것)" },
+    { roles: [2], text: "감자칼로 양파·배 껍질 벗겨 큼직하게 썰기(쟁반 위) → 마늘·생강부터 차례로 갈기. 채수를 조금씩 넣으면 잘 갈려요" },
     { roles: [4, 5], text: "밥상 ①에 신문지 깔고 쪽파 2단 다듬기(뿌리·누런 잎 떼기) → 갓 1단 다듬기" },
-    { roles: [9], text: "쪽파 다듬기 같이 하기(제일 오래 걸려요) → 고춧가루 3kg, 국간장·매실청·된장 계량해 다라이 옆에 두기" },
+    { roles: [1], text: "고춧가루 섞은 다라이를 한쪽에 두고, 쪽파 다듬기 같이 하기(제일 오래 걸려요)" },
     { roles: [6], text: "밥상 ②③에 비닐 깔기 → 김치통마다 이름·포기 수 붙이기(총괄에게 명단 받기) → 10:45 배추 뒤집어 고루 물빼기" },
     { roles: [7], text: "음식물·일반·재활용 봉투 세팅 → 싱크대 순서 부르기(무 → 쪽파·갓) → 쓴 도구 바로 씻기" },
-    { roles: [8], text: "손질하는 동안 노동요, 작업 사진 기록, 물·차 돌리기" }
+    { roles: [8], text: "국간장 900ml·매실청 300ml·된장 120g 계량해서 다라이 옆에 두기 → 노동요, 작업 사진, 물·차 돌리기" }
   ]},
-  { t: "11:00", end: "11:30", title: "풀 쑤고 마무리 손질", rows: [
-    { roles: [1], text: "채수 3L에 찹쌀가루 300g 풀어 약불에서 저으며 풀 쑤기 → 싱크대 찬물에 냄비째 식히기" },
-    { roles: [2], text: "표고 갈기 → 간 재료를 큰 볼에 모으기 → 믹서 씻어 싱크대 지기에게" },
-    { roles: [3], text: "대파 2단 어슷썰기 → 무채와 함께 밥상 ①로" },
+  { t: "11:00", end: "11:30", title: "마무리 손질", rows: [
+    { roles: [3], text: "무채 마무리 → 무채를 면기에 담아 다라이 옆으로 → 도마 ①을 씻어 불 지기에게" },
+    { roles: [9], text: "무채 마무리 → 도마 ②에서 대파 2단 어슷썰기" },
+    { roles: [2], text: "양파 → 배 → 다진 표고 갈기 → 간 재료를 큰 면기에 모으기 → 믹서 씻어 두기" },
     { roles: [4, 5], text: "싱크대에서 쪽파·갓 씻기 → 물 털고 가위 2개로 면기에 바로 4cm씩 잘라 담기" },
-    { roles: [7], text: "찹쌀풀 식히기 자리 비워 두기, 가끔 저어 주기 → 다라이 씻어 바닥에 비닐 깔고 놓기" },
-    { roles: [6, 9], text: "밥상마다 면기 2~3개·고무장갑 놓기, 버무리기 자리 만들기" },
-    { roles: [8], text: "쉬어 가는 노래, 다 끝난 사람은 같이 노래해도 좋아요" }
+    { roles: [1], text: "도마 ①에서 점심 전 재료 썰고 반죽 만들기" },
+    { roles: [6], text: "밥상마다 면기 2~3개·고무장갑 놓기, 버무리기 자리 만들기" },
+    { roles: [7], text: "싱크대 비우고 설거지, 다라이 아래 비닐 깔기" },
+    { roles: [8], text: "쉬어 가는 노래, 손 빈 사람은 같이 불러도 좋아요" }
   ]},
-  { t: "11:30", end: "12:00", title: "양념 섞기", rows: [
-    { roles: [4, 5], text: "다라이에 식은 풀 + 고춧가루 8할 넣고 섞어 15분 불리기 → 간 재료·국간장·매실청·된장 → 무채 → 쪽파·갓·대파 살살 섞기" },
+  { t: "11:30", end: "11:50", title: "양념 섞기", rows: [
+    { roles: [4, 5], text: "불려 둔 다라이에 간 재료·국간장·매실청·된장 넣고 섞기 → 무채 → 쪽파·갓·대파 살살 섞기" },
     { roles: [9], text: "다라이 옆에서 재료 넘겨 주기, 남은 고춧가루는 색 보면서 추가" },
-    { roles: [0], text: "11:50 맛보기: 배춧잎에 싸서 먹어 보고 총괄이 소금으로 간 맞추기" },
-    { roles: [1], text: "도마 받아서 점심 전 재료 썰기, 반죽 만들기" },
-    { roles: [6], text: "물 뺀 배추를 밥상 3곳으로 나눠 나르기(깍두기와 같이)" },
+    { roles: [6, 3], text: "물 뺀 배추를 밥상 3곳으로 나눠 나르기" },
+    { roles: [0], text: "11:45 맛보기: 배춧잎에 싸서 먹어 보고 총괄이 소금으로 간 맞추기" },
     { roles: [8], text: "양념 섞을 때 노동요 하이라이트" }
   ]},
-  { t: "12:00", end: "12:50", title: "버무리기·통에 담기", rows: [
+  { t: "11:50", end: "12:40", title: "버무리기·통에 담기", rows: [
     { roles: [0], text: "밥상마다 3명씩 앉아 버무리기. 줄기 쪽엔 넉넉히, 잎 쪽엔 살짝" },
     { roles: [4], text: "다라이 양념을 밥상별 면기로 덜어 주기, 모자라면 채우기" },
     { roles: [6], text: "다 된 김치를 이름 붙은 김치통에 포기 수대로 담기, 꾹꾹 누르고 80%만 채우기" },
-    { roles: [1], text: "12:20까지 버무리기 돕고 → 전 부치기 시작(화구 1)" },
-    { roles: [2], text: "12:40 라면 물 올리기(화구 2)" },
-    { roles: [7], text: "12:30부터 빈 볼·다라이 설거지" },
+    { roles: [1], text: "12:10까지 버무리기 돕고 → 비건 전 부치기 시작(화구 1)" },
+    { roles: [2], text: "12:30 라면 물 올리기(화구 2)" },
+    { roles: [7], text: "12:20부터 빈 면기·다라이 설거지" },
     { roles: [8], text: "버무리는 동안 연주. 손 남는 밥상 있으면 합류" }
   ]},
-  { t: "12:50", end: "13:40", title: "비건 점심", rows: [
+  { t: "12:40", end: "13:30", title: "비건 점심", rows: [
     { roles: [7, 9], text: "밥상 ① 닦아 점심상 차리기" },
     { roles: [1], text: "비건 전 부치기" },
     { roles: [2], text: "비건 라면 끓이기" },
-    { roles: [0], text: "13:00 다 같이 점심" }
+    { roles: [0], text: "12:50 다 같이 점심" }
   ]},
-  { t: "13:40", end: "14:10", title: "정리·해산", rows: [
+  { t: "13:30", end: "14:00", title: "정리·해산", rows: [
     { roles: [6], text: "김치통 이름·뚜껑 확인하고 나눠 드리기" },
     { roles: [7, 2, 3], text: "설거지" },
     { roles: [4, 5], text: "밥상·바닥 닦기" },
     { roles: [9], text: "쓰레기 분리해서 내놓기" },
     { roles: [8], text: "단체 사진 찍기" },
-    { roles: [0], text: "14:10 해산. 김치는 서늘한 곳에 하루 두었다가 냉장고에 넣어 주세요" }
+    { roles: [0], text: "14:00 해산. 김치는 서늘한 곳에 하루 두었다가 냉장고에 넣어 주세요" }
   ]}
 ];
 
@@ -908,31 +509,34 @@ const CUE = [
   var chips = document.getElementById("roleChips"), card = document.getElementById("roleCard"), list = document.getElementById("cueList");
   function esc(t) { return String(t).replace(/[&<>"]/g, function (c) { return { "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" }[c]; }); }
   function label(r) { return r.icon + " " + r.name; }
-  function roleName(id) {
-    if (id === 0) return "🙋 다 같이";
-    var r = CUE_ROLES.filter(function (x) { return x.id === id; })[0];
-    return label(r);
-  }
+  function role(id) { return CUE_ROLES.filter(function (x) { return x.id === id; })[0]; }
+  function roleName(id) { return id === 0 ? "🙋 다 같이" : label(role(id)); }
   var current = 0;
   function render() {
     Array.prototype.forEach.call(chips.children, function (b) { b.setAttribute("aria-pressed", String(+b.dataset.id === current)); });
     if (current) {
-      var r = CUE_ROLES.filter(function (x) { return x.id === current; })[0];
-      card.innerHTML = "<b>" + esc(label(r)) + "</b><br><span class='who'>담당: " + (r.who ? esc(r.who) : "정해지면 알려드려요") +
-        "</span><br>" + esc(r.sum) + "<br><span class='who'>자리·도구: " + esc(r.where) + "</span>";
+      var r = role(current);
+      card.innerHTML = "<b>" + esc(label(r)) + " 임무카드</b><br><span class='who'>담당: " + (r.who ? esc(r.who) : "정해지면 알려드려요") +
+        " · 자리·도구: " + esc(r.where) + "</span><br>" + esc(r.sum);
       card.classList.remove("hidden");
     } else card.classList.add("hidden");
     list.innerHTML = CUE.map(function (b) {
-      var rows = b.rows.filter(function (row) { return !current || row.roles.indexOf(current) >= 0 || row.roles.indexOf(0) >= 0; });
+      if (current && b.eve && current !== 10) return "";
+      if (current === 10 && !b.eve) return "";
+      var rows = b.rows.filter(function (row) {
+        return !current || row.roles.indexOf(current) >= 0 || (row.roles.indexOf(0) >= 0 && current !== 10);
+      });
       var body = rows.length ? rows.map(function (row) {
-        var who = row.roles.map(roleName).join(" · ");
-        return "<div class='cue-row'><span class='r'>" + who + "</span><span>" + esc(row.text) + "</span></div>";
+        var tag = current ? (row.roles.indexOf(0) >= 0 ? "🙋 다 같이" : row.roles.length > 1
+          ? "같이: " + row.roles.filter(function (id) { return id !== current; }).map(roleName).join(" · ") : "")
+          : row.roles.map(roleName).join(" · ");
+        return "<div class='cue-row'>" + (tag ? "<span class='r'>" + tag + "</span>" : "") + "<span>" + esc(row.text) + "</span></div>";
       }).join("") : "<div class='cue-empty'>이 시간엔 쉬거나, 바쁜 곳을 도와주세요.</div>";
-      return "<div class='cue-block'><div class='cue-time'>" + b.t + "~" + b.end + " <span>" + esc(b.title) + "</span></div>" + body + "</div>";
+      return "<div class='cue-block'><div class='cue-time'>" + b.t + (b.end ? "~" + b.end : "") + " <span>" + esc(b.title) + "</span></div>" + body + "</div>";
     }).join("");
   }
-  chips.innerHTML = "<button type='button' data-id='0'>전체</button>" + CUE_ROLES.map(function (r) {
-    return "<button type='button' data-id='" + r.id + "'>" + esc(label(r)) + (r.who ? " · " + esc(r.who) : "") + "</button>";
+  chips.innerHTML = "<button type='button' data-id='0'>전체 흐름</button>" + CUE_ROLES.map(function (r) {
+    return "<button type='button' data-id='" + r.id + "'>" + esc(label(r)) + (r.who && r.id !== 10 ? " · " + esc(r.who) : "") + "</button>";
   }).join("");
   chips.addEventListener("click", function (e) {
     var b = e.target.closest("button"); if (!b) return;
