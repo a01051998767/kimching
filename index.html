@@ -120,6 +120,24 @@ const RECIPE = [
   .timeline > li > b { font-size: 20px; }
   .timeline small { display: block; color: var(--muted); font-size: 15px; line-height: 1.5; }
   .tag-now { display: inline-block; margin-left: 6px; padding: 1px 8px; border-radius: 999px; background: var(--red); color: #fff; font-size: 13px; vertical-align: 2px; }
+  .role-chips { display: flex; flex-wrap: wrap; gap: 6px; margin: 4px 0 12px; }
+  .role-chips button {
+    font: inherit; font-size: 15px; font-weight: 600; padding: 7px 11px; min-height: 40px; border-radius: 999px;
+    border: 1px solid var(--line); background: #fff; color: var(--ink); cursor: pointer;
+  }
+  .role-chips button[aria-pressed="true"] { background: var(--green); border-color: var(--green); color: #fff; }
+  .role-card { background: var(--green-soft); border-radius: 12px; padding: 12px 14px; margin-bottom: 12px; font-size: 16px; }
+  .role-card b { font-size: 19px; }
+  .role-card .who { color: var(--muted); font-size: 15px; }
+  .cue-block { margin-top: 14px; }
+  .cue-time { display: flex; gap: 8px; align-items: baseline; font-weight: 700; color: var(--red); font-size: 16px;
+    border-bottom: 2px solid var(--red-soft); padding-bottom: 4px; margin-bottom: 4px; }
+  .cue-time span { color: var(--ink); }
+  .cue-row { padding: 8px 0; border-bottom: 1px dashed var(--line); font-size: 16px; line-height: 1.55; }
+  .cue-row:last-child { border-bottom: 0; }
+  .cue-row .r { display: block; font-weight: 700; color: var(--green-dark); font-size: 15px; }
+  .cue-empty { color: var(--muted); font-size: 15px; padding: 6px 0; }
+  .gear td:first-child { white-space: nowrap; font-weight: 700; color: var(--green-dark); width: 5.5em; }
   .dayflow { margin: 8px 0 0; padding: 12px 12px 12px 34px; background: var(--green-soft); border-radius: 12px; font-size: 17px; }
   .dayflow li { padding: 2px 0; }
   .shop-table tr.grp td { background: #f7f2e7; font-weight: 700; color: var(--green-dark); font-size: 15px; padding: 6px; }
@@ -264,7 +282,7 @@ const RECIPE = [
 </header>
 
 <nav class="quicknav" aria-label="바로가기">
-  <a href="#info">안내</a><a href="#schedule">일정</a><a href="#apply">신청</a><a href="#fee">참가비</a><a href="#recipe">레시피</a><a href="#shopDetails">장보기</a>
+  <a href="#info">안내</a><a href="#schedule">일정</a><a href="#cue">큐시트</a><a href="#apply">신청</a><a href="#fee">참가비</a><a href="#recipe">레시피</a><a href="#shopDetails">장보기</a>
 </nav>
 
 <main>
@@ -319,8 +337,35 @@ const RECIPE = [
           <li>김치통에 담기</li>
           <li>비건 전 부치고 비건 라면 끓여 점심</li>
           <li>정리하고 마무리</li>
-        </ol></li>
+        </ol>
+        <a href="#cue" class="hint">→ 누가 언제 무엇을 하는지는 큐시트에서 볼 수 있어요</a></li>
     </ol>
+  </section>
+
+  <!-- 당일 큐시트 -->
+  <section class="card" id="cue" aria-labelledby="h-cue">
+    <h2 id="h-cue">김장 당일 큐시트</h2>
+    <p>11월 29일(일) 10:00~14:10. 역할을 누르면 그 역할이 할 일만 보여요.</p>
+    <div class="role-chips" id="roleChips" role="group" aria-label="역할 고르기"></div>
+    <div class="role-card hidden" id="roleCard" aria-live="polite"></div>
+    <div id="cueList"></div>
+
+    <details style="margin-top:14px">
+      <summary>장비·자리 쓰는 순서</summary>
+      <table class="gear">
+        <tbody>
+          <tr><td>화구 1</td><td>채수 1솥 → 찹쌀풀 → 전 부치기</td></tr>
+          <tr><td>화구 2</td><td>채수 2솥 → 쉼 → 라면</td></tr>
+          <tr><td>도마</td><td>무채 → 대파 → 점심 재료</td></tr>
+          <tr><td>믹서</td><td>마늘·생강 → 양파 → 배 → 표고</td></tr>
+          <tr><td>큰 다라이</td><td>양념 섞기 (11:30~12:00) → 설거지</td></tr>
+          <tr><td>싱크대</td><td>무 씻기 → 쪽파·갓 씻기 → 찹쌀풀 식히기 → 설거지</td></tr>
+          <tr><td>화장실</td><td>절임배추 물빼기 (10:00~12:00), 손 씻기</td></tr>
+          <tr><td>밥상 ①</td><td>쪽파·갓 다듬기 → 버무리기 → 점심상</td></tr>
+          <tr><td>밥상 ②③</td><td>양파·배 손질, 계량 → 버무리기</td></tr>
+        </tbody>
+      </table>
+    </details>
   </section>
 
   <!-- ② 현재 신청 현황 -->
@@ -778,6 +823,119 @@ const RECIPE = [
   renderShopping();
   if (isClosed()) applyClosed();
   loadStatus();
+})();
+</script>
+<script>
+/* =====================================================================
+   당일 큐시트 — 역할 이름(who)을 채우면 화면에 담당자가 나와요.
+   ===================================================================== */
+const CUE_ROLES = [
+  { id: 1, icon: "🔥", name: "불 지기",     who: "", where: "화구 2개",          sum: "채수와 찹쌀풀을 끓이고, 점심엔 전을 부쳐요." },
+  { id: 2, icon: "🌀", name: "믹서 지기",   who: "", where: "믹서, 밥상 ②",      sum: "마늘·생강·양파·배·표고를 갈고, 점심엔 라면을 끓여요." },
+  { id: 3, icon: "🔪", name: "도마 지기",   who: "", where: "도마",              sum: "무채를 썰고 대파를 썰어요. 도마는 하나라 이 분만 써요." },
+  { id: 4, icon: "🌿", name: "다듬이 1",    who: "", where: "밥상 ①, 다라이",    sum: "쪽파·갓을 다듬어 자르고, 다라이에서 양념을 섞어요." },
+  { id: 5, icon: "🌿", name: "다듬이 2",    who: "", where: "밥상 ①, 다라이",    sum: "다듬이 1과 같이 일해요. 양념 섞기는 팔힘이 필요해요." },
+  { id: 6, icon: "🥬", name: "배추 지기",   who: "", where: "화장실, 밥상 ②③",   sum: "절임배추 물을 빼고, 김치통 나누기를 챙겨요." },
+  { id: 7, icon: "🚰", name: "싱크대 지기", who: "", where: "싱크대",            sum: "싱크대 쓰는 순서를 정하고, 쓴 도구를 바로 씻어요." },
+  { id: 8, icon: "🎸", name: "흥 지기",     who: "", where: "어디든",            sum: "노동요와 통기타, 사진 기록을 맡아요. 바쁠 땐 손도 보태요." },
+  { id: 9, icon: "🙌", name: "깍두기",      who: "", where: "어디든",            sum: "일이 몰리는 곳을 도와요. 계량과 쓰레기 정리도 맡아요." }
+];
+// roles: 이 줄을 할 역할 번호들 (0 = 다 같이)
+const CUE = [
+  { t: "10:00", end: "10:15", title: "모이기", rows: [
+    { roles: [0], text: "인사하고 손 씻기, 앞치마·고무장갑 챙기기, 역할 확인" },
+    { roles: [6], text: "도착하자마자 절임배추 박스를 열어 화장실 채반에 엎어 물빼기 시작" },
+    { roles: [1], text: "두 화구에 물 2.5L씩 올리고 다시마·건표고 넣기" },
+    { roles: [8], text: "여는 노래 한 곡, 사진 찍어도 되는지 먼저 묻기" }
+  ]},
+  { t: "10:15", end: "11:00", title: "재료 손질", rows: [
+    { roles: [1], text: "끓어오르면 약불 10분 → 다시마 건지고 10분 더 → 체에 걸러 채수 완성. 건진 표고는 믹서 지기에게" },
+    { roles: [2], text: "양파·배 껍질 벗겨 큼직하게 썰기(쟁반 위) → 마늘·생강부터 차례로 갈기. 국간장·매실청을 조금 넣으면 잘 갈려요" },
+    { roles: [3], text: "싱크대 첫 순서로 무 씻기 → 껍질 벗기기 → 무 5개 채 썰기" },
+    { roles: [4, 5], text: "밥상 ①에 신문지 깔고 쪽파 2단 다듬기(뿌리·누런 잎 떼기) → 갓 1단 다듬기" },
+    { roles: [9], text: "쪽파 다듬기 같이 하기(제일 오래 걸려요) → 고춧가루 3kg, 국간장·매실청·된장 계량해 다라이 옆에 두기" },
+    { roles: [6], text: "밥상 ②③에 비닐 깔기 → 김치통마다 이름·포기 수 붙이기(총괄에게 명단 받기) → 10:45 배추 뒤집어 고루 물빼기" },
+    { roles: [7], text: "음식물·일반·재활용 봉투 세팅 → 싱크대 순서 부르기(무 → 쪽파·갓) → 쓴 도구 바로 씻기" },
+    { roles: [8], text: "손질하는 동안 노동요, 작업 사진 기록, 물·차 돌리기" }
+  ]},
+  { t: "11:00", end: "11:30", title: "풀 쑤고 마무리 손질", rows: [
+    { roles: [1], text: "채수 3L에 찹쌀가루 300g 풀어 약불에서 저으며 풀 쑤기 → 싱크대 찬물에 냄비째 식히기" },
+    { roles: [2], text: "표고 갈기 → 간 재료를 큰 볼에 모으기 → 믹서 씻어 싱크대 지기에게" },
+    { roles: [3], text: "대파 2단 어슷썰기 → 무채와 함께 밥상 ①로" },
+    { roles: [4, 5], text: "싱크대에서 쪽파·갓 씻기 → 물 털어 4cm로 자르기(가위나 칼, 쟁반 위)" },
+    { roles: [7], text: "찹쌀풀 식히기 자리 비워 두기, 가끔 저어 주기 → 다라이 씻어 바닥에 비닐 깔고 놓기" },
+    { roles: [6, 9], text: "밥상마다 큰 볼·고무장갑 놓기, 버무리기 자리 만들기" },
+    { roles: [8], text: "쉬어 가는 노래, 다 끝난 사람은 같이 노래해도 좋아요" }
+  ]},
+  { t: "11:30", end: "12:00", title: "양념 섞기", rows: [
+    { roles: [4, 5], text: "다라이에 식은 풀 + 고춧가루 8할 넣고 섞어 15분 불리기 → 간 재료·국간장·매실청·된장 → 무채 → 쪽파·갓·대파 살살 섞기" },
+    { roles: [9], text: "다라이 옆에서 재료 넘겨 주기, 남은 고춧가루는 색 보면서 추가" },
+    { roles: [0], text: "11:50 맛보기: 배춧잎에 싸서 먹어 보고 총괄이 소금으로 간 맞추기" },
+    { roles: [1], text: "도마 받아서 점심 전 재료 썰기, 반죽 만들기" },
+    { roles: [6], text: "물 뺀 배추를 밥상 3곳으로 나눠 나르기(깍두기와 같이)" },
+    { roles: [8], text: "양념 섞을 때 노동요 하이라이트" }
+  ]},
+  { t: "12:00", end: "12:50", title: "버무리기·통에 담기", rows: [
+    { roles: [0], text: "밥상마다 3명씩 앉아 버무리기. 줄기 쪽엔 넉넉히, 잎 쪽엔 살짝" },
+    { roles: [4], text: "다라이 양념을 밥상별 볼로 덜어 주기, 모자라면 채우기" },
+    { roles: [6], text: "다 된 김치를 이름 붙은 김치통에 포기 수대로 담기, 꾹꾹 누르고 80%만 채우기" },
+    { roles: [1], text: "12:20까지 버무리기 돕고 → 전 부치기 시작(화구 1)" },
+    { roles: [2], text: "12:40 라면 물 올리기(화구 2)" },
+    { roles: [7], text: "12:30부터 빈 볼·다라이 설거지" },
+    { roles: [8], text: "버무리는 동안 연주. 손 남는 밥상 있으면 합류" }
+  ]},
+  { t: "12:50", end: "13:40", title: "비건 점심", rows: [
+    { roles: [7, 9], text: "밥상 ① 닦아 점심상 차리기" },
+    { roles: [1], text: "비건 전 부치기" },
+    { roles: [2], text: "비건 라면 끓이기" },
+    { roles: [0], text: "13:00 다 같이 점심" }
+  ]},
+  { t: "13:40", end: "14:10", title: "정리·해산", rows: [
+    { roles: [6], text: "김치통 이름·뚜껑 확인하고 나눠 드리기" },
+    { roles: [7, 2, 3], text: "설거지" },
+    { roles: [4, 5], text: "밥상·바닥 닦기" },
+    { roles: [9], text: "쓰레기 분리해서 내놓기" },
+    { roles: [8], text: "단체 사진 찍기" },
+    { roles: [0], text: "14:10 해산. 김치는 서늘한 곳에 하루 두었다가 냉장고에 넣어 주세요" }
+  ]}
+];
+
+(function () {
+  "use strict";
+  var chips = document.getElementById("roleChips"), card = document.getElementById("roleCard"), list = document.getElementById("cueList");
+  function esc(t) { return String(t).replace(/[&<>"]/g, function (c) { return { "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" }[c]; }); }
+  function label(r) { return r.icon + " " + r.name; }
+  function roleName(id) {
+    if (id === 0) return "🙋 다 같이";
+    var r = CUE_ROLES.filter(function (x) { return x.id === id; })[0];
+    return label(r);
+  }
+  var current = 0;
+  function render() {
+    Array.prototype.forEach.call(chips.children, function (b) { b.setAttribute("aria-pressed", String(+b.dataset.id === current)); });
+    if (current) {
+      var r = CUE_ROLES.filter(function (x) { return x.id === current; })[0];
+      card.innerHTML = "<b>" + esc(label(r)) + "</b><br><span class='who'>담당: " + (r.who ? esc(r.who) : "정해지면 알려드려요") +
+        "</span><br>" + esc(r.sum) + "<br><span class='who'>자리·도구: " + esc(r.where) + "</span>";
+      card.classList.remove("hidden");
+    } else card.classList.add("hidden");
+    list.innerHTML = CUE.map(function (b) {
+      var rows = b.rows.filter(function (row) { return !current || row.roles.indexOf(current) >= 0 || row.roles.indexOf(0) >= 0; });
+      var body = rows.length ? rows.map(function (row) {
+        var who = row.roles.map(roleName).join(" · ");
+        return "<div class='cue-row'><span class='r'>" + who + "</span><span>" + esc(row.text) + "</span></div>";
+      }).join("") : "<div class='cue-empty'>이 시간엔 쉬거나, 바쁜 곳을 도와주세요.</div>";
+      return "<div class='cue-block'><div class='cue-time'>" + b.t + "~" + b.end + " <span>" + esc(b.title) + "</span></div>" + body + "</div>";
+    }).join("");
+  }
+  chips.innerHTML = "<button type='button' data-id='0'>전체</button>" + CUE_ROLES.map(function (r) {
+    return "<button type='button' data-id='" + r.id + "'>" + esc(label(r)) + (r.who ? " · " + esc(r.who) : "") + "</button>";
+  }).join("");
+  chips.addEventListener("click", function (e) {
+    var b = e.target.closest("button"); if (!b) return;
+    current = +b.dataset.id; render();
+  });
+  render();
 })();
 </script>
 </body>
