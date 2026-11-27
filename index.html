@@ -7,7 +7,7 @@
 <meta name="description" content="2026년 11월 29일(일) 오전 10시, 함께 담그는 비건 행복김치 모임 안내와 임무카드">
 <script>
 const CONFIG = {
-  TOTAL_KG: 40,   // 주문한 절인배추 (10kg × 4박스)
+  TOTAL_KG: 40,   // 주문한 절인배추 (10kg × 4상자)
   BOX_KG: 10,
   KG_PER_HEAD: 2
 };
@@ -25,8 +25,8 @@ const RECIPE = [
   { group: "양념·가루", name: "찹쌀가루", label: "15g",     per: 15,   unit: "g",  pack: 500 },
   { group: "양념·가루", name: "국간장",   label: "3큰술",   per: 45,   unit: "ml", pack: 500 },
   { group: "양념·가루", name: "매실청",   label: "1큰술",   per: 15,   unit: "ml", pack: 500 },
-  { group: "양념·가루", name: "된장",     label: "1작은술", per: 6,    unit: "g",  pack: 500 },
-  { group: "양념·가루", name: "굵은소금", label: "1/2큰술", per: 8,    unit: "g",  pack: 1000 },
+  { group: "양념·가루", name: "된장",     label: "1작은술", per: 6,    unit: "g",  pack: 500, home: true },
+  { group: "양념·가루", name: "굵은소금", label: "1/2큰술", per: 8,    unit: "g",  pack: 1000, home: true },
   { group: "채수 재료", name: "다시마",   label: "3g",      per: 3,    unit: "g",  pack: 100 },
   { group: "채수 재료", name: "건표고",   label: "1개(4g)", per: 4,    unit: "g",  pack: 100 }
 ];
@@ -192,7 +192,7 @@ const LUNCH_SHOP = [
 </header>
 
 <nav class="quicknav" aria-label="바로가기">
-  <a href="#info">안내</a><a href="#schedule">일정</a><a href="#cue">임무카드</a><a href="#recipe">레시피</a><a href="#shopDetails">장보기</a>
+  <a href="#info">안내</a><a href="#schedule">일정</a><a href="#cue">임무카드</a><a href="#recipe">만드는 방법</a><a href="#shopDetails">장보기</a>
 </nav>
 
 <main>
@@ -262,9 +262,8 @@ const LUNCH_SHOP = [
   </section>
 
   <details class="card" id="recipe">
-    <summary>레시피</summary>
+    <summary>비건 김장김치 만드는 방법</summary>
 
-    <h3 style="margin-top:0">비건 김장김치</h3>
     <p>젓갈 대신 다시마·표고 채수, 국간장, 된장, 배로 감칠맛을 내요.</p>
     <table>
       <thead><tr><th>재료</th><th class="num">1포기(2kg) 분량</th></tr></thead>
@@ -280,7 +279,7 @@ const LUNCH_SHOP = [
     </ol>
     <div class="vegan-badge">🌱 위 재료 16가지는 모두 식물성이에요.</div>
 
-    <h3>부추전 (점심, 8장쯤)</h3>
+    <h3>부추전 만드는 방법 (점심, 8장쯤)</h3>
     <table>
       <tbody>
         <tr><td>부추</td><td class="num">1단(약 500g)</td></tr>
@@ -306,7 +305,6 @@ const LUNCH_SHOP = [
       <thead><tr><th>재료</th><th class="num">필요한 양</th><th class="num">살 양</th></tr></thead>
       <tbody id="shopBody"></tbody>
     </table>
-    <p class="hint" style="margin-top:8px">된장·굵은소금은 집에 있으면 안 사도 돼요.</p>
   </details>
 
   <footer>함께 담그는 비건 행복김치 · 문의 <a href="mailto:a01051998767@gmail.com">a01051998767@gmail.com</a></footer>
@@ -330,9 +328,9 @@ const LUNCH_SHOP = [
   }).join("");
 
   $("shopBox").textContent = "절인배추 " + CONFIG.TOTAL_KG + "kg 주문 완료";
-  $("shopBoxWhy").textContent = CONFIG.BOX_KG + "kg × " + Math.round(CONFIG.TOTAL_KG / CONFIG.BOX_KG) + "박스, 약 " + HEADS + "포기 기준이에요.";
+  $("shopBoxWhy").textContent = CONFIG.BOX_KG + "kg × " + Math.round(CONFIG.TOTAL_KG / CONFIG.BOX_KG) + "상자, 약 " + HEADS + "포기 기준이에요.";
   var lastGroup = "";
-  var rows = RECIPE.map(function (r) {
+  var rows = RECIPE.filter(function (r) { return !r.home; }).map(function (r) {
     var need = r.per * HEADS;
     var buy = Math.ceil(Math.round(need / r.pack * 1e6) / 1e6) * r.pack;
     var head = r.group !== lastGroup ? "<tr class='grp'><td colspan='3'>" + r.group + "</td></tr>" : "";
@@ -394,7 +392,7 @@ const CUE = [
   ]},
   { t: "10:00", end: "10:15", title: "모이기", rows: [
     { roles: [0], text: "인사, 손 씻기, 앞치마·고무장갑" },
-    { roles: [6], text: "절임배추를 박스 안에서 엎고, 박스째 화장실 바닥에 기울여 물빼기. 박스 속 비닐은 아래 모서리에 구멍" },
+    { roles: [6], text: "절임배추를 상자 안에서 엎고, 상자째 화장실 바닥에 기울여 물빼기. 상자 속 비닐은 아래 모서리에 구멍" },
     { roles: [4, 5], text: "대야에 찹쌀풀 + 고춧가루 2.4kg 섞어 불리기. 되직하면 채수로 풀기" },
     { roles: [1], text: "점심 재료와 그릇 수 확인" },
     { roles: [8], text: "노동요 틀기, 폴라로이드 찍어도 되는지 묻기" }
@@ -406,7 +404,7 @@ const CUE = [
     { roles: [4, 5], text: "밥상 ①에서 쪽파 2단 → 갓 1단 다듬기" },
     { roles: [1], text: "밥상 ③에서 부추 다듬기, 당근 씻기" },
     { roles: [6], text: "밥상 ②③에 비닐 깔기 → 김치통에 이름·포기 수 붙이기 → 10:35 쪽파 다듬기 돕기 → 10:50 배추 뒤집기" },
-    { roles: [7], text: "쓰레기 봉투 세팅 → 싱크대 순서 부르기(무 → 쪽파·갓 → 부추) → 바로바로 설거지" },
+    { roles: [7], text: "쓰레기 봉투 펼쳐 두기 → 싱크대 순서 부르기(무 → 쪽파·갓 → 부추) → 바로바로 설거지" },
     { roles: [8], text: "국간장 900ml·매실청 300ml·된장 120g 계량 → 선곡, 폴라로이드, 물·차 돌리기" }
   ]},
   { t: "11:00", end: "11:30", title: "마무리 손질", rows: [
